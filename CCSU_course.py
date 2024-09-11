@@ -2,6 +2,7 @@ import requests
 import os
 import time
 import json
+import sys
 from bs4 import BeautifulSoup
 import base64
 import binascii
@@ -19,6 +20,8 @@ with open('setting.json','r',encoding='utf-8') as file:
     reji = json.load(file)
 
 # print(reji)
+
+
 
 username = reji['username']
 password = reji['password']
@@ -38,8 +41,11 @@ session.headers.update({'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)
 session.headers.update({'"Host': 'jwxt.jwc.ccsu.cn'})
 session.headers.update({'Connection': 'keep-alive'})
 
-
-res_1 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html')
+try:
+    res_1 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html')
+except:
+    print("请求失败,请尝试关闭系统代理")
+    sys.exit()
 
 # print(res_1.status_code)
 # print(res_1.text)
@@ -59,7 +65,7 @@ csrftoken = data_csrftoken['value']
 
 tm=str(int(time.time()*1000))
 
-reji = 'http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_getPublicKey.html?time='+tm+'&_='+tm
+# reji = 'http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_getPublicKey.html?time='+tm+'&_='+tm
 # print(reji)
 
 res_2 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_getPublicKey.html?time='+tm+'&_='+tm)
@@ -121,8 +127,27 @@ res_3 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html?time
 # print(res_3.headers)
 # print(res_3.text)
 
+#获取登录者
+
+tm=str(int(time.time()*1000))
+res_getName = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/index_cxYhxxIndex.html?xt=jw&localeKey=zh_CN&_='+tm+'&gnmkdm=index')
+
+soup = BeautifulSoup(res_getName.text,'html.parser')
+name = soup.find('h4', class_='media-heading')
+
+# if name is None:
+#     print('登录失败,请检查setting.json中的username与password是否正确')
+#     session.close()
+#     sys.exit()
+
+name = name.lstrip('<h4 class="media-heading">')
+name = name.rstrip('  学生</h4>')
+
+# print(name)
+print('登录成功 用户:'+name)
+
 # with open('data_login_success.html','w',encoding='utf-8') as file:
-#     file.write(str(res_3.text))
+#     file.write(str(res_getName.text))
 
 # while 1 == 1:
 #     a=1
@@ -443,4 +468,4 @@ while 1:
 # reji = soup.find('input', attrs={'id': 'firstXkkzId'})['value']
 
 
-session.close
+session.close()

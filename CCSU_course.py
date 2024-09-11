@@ -22,7 +22,7 @@ with open('setting.json','r',encoding='utf-8') as file:
 
 username = reji['username']
 password = reji['password']
-
+selectOnline_flag = reji['autoSelectOnline']
 
 
 session = requests.Session()
@@ -40,6 +40,9 @@ session.headers.update({'Connection': 'keep-alive'})
 
 
 res_1 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html')
+
+# print(res_1.status_code)
+# print(res_1.text)
 
 soup=BeautifulSoup(res_1.text,'html.parser')
 
@@ -118,6 +121,11 @@ res_3 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html?time
 # print(res_3.headers)
 # print(res_3.text)
 
+# with open('data_login_success.html','w',encoding='utf-8') as file:
+#     file.write(str(res_3.text))
+
+# while 1 == 1:
+#     a=1
 
 #选/查课信息获取part
 res_4 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt//xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default')
@@ -289,6 +297,8 @@ data = {
     'fxbj' : '0',
 }
 
+online_course = []
+
 a = 0
 for a in range(len(all_in_one)):
     data['kch_id'] = all_in_one[a]['kch_id']
@@ -312,11 +322,26 @@ for a in range(len(all_in_one)):
 a = 0
 for a in range(len(data_fin)):
     print(str(a)+'   '+data_fin[a]['name']+'   '+data_fin[a]['location']+'   '+data_fin[a]['time'])
+    if selectOnline_flag is True:
+        if(data_fin[a]['location']=='网课'):
+            online_course.append(a)
 
+b=0
 
 while 1:
-    print('---------------请输入想要选择的课程的前缀编号---------------')
-    a = int(input())
+    if selectOnline_flag is True:
+        print('---------------进行自动选择网课---------------')
+        if b>=len(online_course):
+            print('没有更多网课')
+            break
+        else:
+            a=online_course[b]
+            b+=1
+    else:
+        print('---------------请输入想要选择的课程的前缀编号(输入"-1"退出)---------------')
+        a = int(input())
+        if a == -1:
+            break
     data = {
         'jxb_ids': data_fin[a]['jxb_ids'],
         'kch_id': data_fin[a]['kch_id'],
@@ -339,7 +364,7 @@ while 1:
     }
     res_8=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512',data)
     reji = json.loads(res_8.text)
-    if reji['flag'] == 1:
+    if reji['flag'] == '1':
         print('选择课程'+'"'+data_fin[a]['name']+'"成功')
     else:
         print('选择课程'+'"'+data_fin[a]['name']+'"失败')
@@ -347,33 +372,33 @@ while 1:
 
 
 # 选课part
-data = {
-    'jxb_ids': '2fafd050d85c190e3e262e8300db38199ee7a59dcee19fd0379516d61360f7aaf59e45b26ebb3aecdc1a787c07bde93b2b49a38e3b382e5ac07c106da5086f28d39d07262548ad4983ded03d78d4345686902f7dec09395ddc321588eb47e88343188e871b80df66bef22b631d0deabe84d9a031006bcee6f603ed51407087a5',
-    'kch_id': '21A81C50E7E0C7E8E0638C28C4DA6C2B',
-    # 'kcmc': '(RY000D2406)走进西方音乐 - 1.0 学分',
-    # 'rwlx': '2',
-    # 'rlkz': '0',
-    # 'rlzlkz': '1',
-    # 'sxbj': '1',
-    # 'xxkbj': '0', 
-    'qz': '0',
-    # 'cxbj': '0',
-    # 'xkkz_id': '216920FAF7755041E0638C28C4DA8BD6',
-    'njdm_id': njdm_id,
-    'zyh_id': zyh_id,
-    # 'kklxdm': '10',
-    # 'xklc': '2',
-    'xkxnm': xkxnm,
-    'xkxqm': xkxqm,
-    'jcxx_id': '',  # 如果jcxx_id为空，可以省略
-}
+# data = {
+#     'jxb_ids': '2fafd050d85c190e3e262e8300db38199ee7a59dcee19fd0379516d61360f7aaf59e45b26ebb3aecdc1a787c07bde93b2b49a38e3b382e5ac07c106da5086f28d39d07262548ad4983ded03d78d4345686902f7dec09395ddc321588eb47e88343188e871b80df66bef22b631d0deabe84d9a031006bcee6f603ed51407087a5',
+#     'kch_id': '21A81C50E7E0C7E8E0638C28C4DA6C2B',
+#     # 'kcmc': '(RY000D2406)走进西方音乐 - 1.0 学分',
+#     # 'rwlx': '2',
+#     # 'rlkz': '0',
+#     # 'rlzlkz': '1',
+#     # 'sxbj': '1',
+#     # 'xxkbj': '0', 
+#     'qz': '0',
+#     # 'cxbj': '0',
+#     # 'xkkz_id': '216920FAF7755041E0638C28C4DA8BD6',
+#     'njdm_id': njdm_id,
+#     'zyh_id': zyh_id,
+#     # 'kklxdm': '10',
+#     # 'xklc': '2',
+#     'xkxnm': xkxnm,
+#     'xkxqm': xkxqm,
+#     'jcxx_id': '',  # 如果jcxx_id为空，可以省略
+# }
 
 
-res_8=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512',data)
+# res_8=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512',data)
 
-print(res_8.status_code)
-print(res_8.headers)
-print(res_8.text)
+# print(res_8.status_code)
+# print(res_8.headers)
+# print(res_8.text)
 
 
 

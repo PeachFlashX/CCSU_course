@@ -9,7 +9,20 @@
 ---
 
 所需模块安装:
+
 `pip install cryptography requests bs4 rsa six`
+
+---
+
+##待办事项
+
+1.异常处理
+
+2.定时启动
+
+3.体育课直抢
+
+4.课程捡漏
 
 ---
 

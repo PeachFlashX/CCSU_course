@@ -24,6 +24,8 @@
 
 4.课程捡漏
 
+5.ABCD 类课程区分显示(已完成)
+
 ---
 
 [RSA 加密部分(jsFunction.py)来自,很难不磕一个](https://github.com/Kunz1Pro/CUMT-jwxt/tree/master)

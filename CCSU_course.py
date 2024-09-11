@@ -166,7 +166,8 @@ session.headers.update({'x-requested-with': 'XMLHttpRequest'})
 kspage = 1
 jspage = 10
 data = {
-    'yl_list[0]': '1',
+    'yl_list[0]': '1',    #'1'为查询余量课   '0'为已满课
+    'kcgs_list[0]': '1',  #'1'A类 '4'B类 '5'C类 '6'D类
     'rwlx': '2',
     'xkly': '0',
     'bklx_id': '0',
@@ -210,29 +211,49 @@ data = {
     'jxbzb': '',
 }
 # print(data)
-res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data)
-
-# print(res_5.status_code)
-# print(res_5.headers)
-# print(res_5.text)
 
 all_in_one =[]
+type_course = [1,4,5,6]
 
-reji = json.loads(res_5.text)
 
 courst_count = 0
-
-while len(reji['tmpList'])>0:
-    courst_count+=len(reji['tmpList'])
-    a = 0
-    for a in range(len(reji['tmpList'])):
-        all_in_one.append(reji['tmpList'][a])
-    kspage += 10
-    jspage += 10
-    data['kspage']=kspage
-    data['jspage']=jspage
+for b in type_course:
+    data['kcgs_list[0]']= b
+    kspage = 1
+    jspage = 10
+    data['kspage'] = kspage
+    data['jspage'] = jspage
     res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data)
+
+    # print(res_5.status_code)
+    # print(res_5.headers)
+    # print(res_5.text)
     reji = json.loads(res_5.text)
+    while len(reji['tmpList'])>0:
+        courst_count+=len(reji['tmpList'])
+        a = 0
+        for a in range(len(reji['tmpList'])):
+            if b == 1:
+                reji['tmpList'][a]['type_course'] = 'A类'
+            else:
+                if b == 4:
+                    reji['tmpList'][a]['type_course'] = 'B类'
+                else:
+                    if b == 5:
+                        reji['tmpList'][a]['type_course'] = 'C类'
+                    else:
+                        if b == 6:
+                            reji['tmpList'][a]['type_course'] = 'D类'
+                        else:
+                            reji['tmpList'][a]['type_course'] = '错误类'
+                            print("m_err:课程类别判断错误")
+            all_in_one.append(reji['tmpList'][a])
+        kspage += 10
+        jspage += 10
+        data['kspage']=kspage
+        data['jspage']=jspage
+        res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data)
+        reji = json.loads(res_5.text)
 
 # print(reji['tmpList'])
 # print(len(reji['tmpList']))
@@ -312,6 +333,7 @@ for a in range(len(all_in_one)):
             'jxb_ids' : reji_1[b]['do_jxb_id'],
             'location' : reji_1[b]['jxdd'],
             'time' : reji_1[b]['sksj'],
+            'type' : all_in_one[a]['type_course'],
         }
         if reji['location'] == '--':
             reji['location'] = '网课'
@@ -321,7 +343,7 @@ for a in range(len(all_in_one)):
 # 查单课part
 a = 0
 for a in range(len(data_fin)):
-    print(str(a)+'   '+data_fin[a]['name']+'   '+data_fin[a]['location']+'   '+data_fin[a]['time'])
+    print(str(a)+'   '+data_fin[a]['name']+'   '+data_fin[a]['location']+'   '+data_fin[a]['time']+'   '+data_fin[a]['type'])
     if selectOnline_flag is True:
         if(data_fin[a]['location']=='网课'):
             online_course.append(a)

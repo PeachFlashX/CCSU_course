@@ -8,4 +8,9 @@
 
 ---
 
+所需模块安装:
+`pip install cryptography requests bs4 rsa six`
+
+---
+
 [RSA 加密部分(jsFunction.py)来自,很难不磕一个](https://github.com/Kunz1Pro/CUMT-jwxt/tree/master)

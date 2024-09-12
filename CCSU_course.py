@@ -41,10 +41,12 @@ session.headers.update({'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)
 session.headers.update({'"Host': 'jwxt.jwc.ccsu.cn'})
 session.headers.update({'Connection': 'keep-alive'})
 
+print('尝试访问登录页')
+
 try:
     res_1 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html')
 except:
-    print("请求失败,请尝试关闭系统代理")
+    print("err 1:请求失败,请尝试关闭系统代理")
     sys.exit()
 
 # print(res_1.status_code)
@@ -55,7 +57,11 @@ soup=BeautifulSoup(res_1.text,'html.parser')
 # print(soup.title.string)
 
 data_csrftoken = soup.find('input', attrs={'id': 'csrftoken'})
-csrftoken = data_csrftoken['value']
+try:
+    csrftoken = data_csrftoken['value']
+except:
+    print("err 2:请求失败,请尝试关闭系统代理")
+    sys.exit()
 
 # print(csrftoken)
 
@@ -67,6 +73,8 @@ tm=str(int(time.time()*1000))
 
 # reji = 'http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_getPublicKey.html?time='+tm+'&_='+tm
 # print(reji)
+
+print('尝试获取加密公钥')
 
 res_2 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_getPublicKey.html?time='+tm+'&_='+tm)
 # print(res_2.text)
@@ -122,6 +130,8 @@ data = {
         'mm': pwd_cry,
     }
 
+print('尝试登录')
+
 res_3 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html?time='+str(int(time.time()*1000)),data)
 # print(res_3.status_code)
 # print(res_3.headers)
@@ -129,17 +139,19 @@ res_3 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html?time
 
 #获取登录者
 
+print('尝试获取用户名')
+
 tm=str(int(time.time()*1000))
 res_getName = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/index_cxYhxxIndex.html?xt=jw&localeKey=zh_CN&_='+tm+'&gnmkdm=index')
 
 soup = BeautifulSoup(res_getName.text,'html.parser')
 name = soup.find('h4', class_='media-heading')
 
-# if name is None:
-#     print('登录失败,请检查setting.json中的username与password是否正确')
-#     session.close()
-#     sys.exit()
-
+if name is None:
+    print('登录失败,请检查setting.json中的username与password是否正确')
+    session.close()
+    sys.exit()
+name = str(name)
 name = name.lstrip('<h4 class="media-heading">')
 name = name.rstrip('  学生</h4>')
 
@@ -153,6 +165,9 @@ print('登录成功 用户:'+name)
 #     a=1
 
 #选/查课信息获取part
+
+print('尝试获取查课前置信息')
+
 res_4 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt//xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default')
 
 # print(res_4.status_code)
@@ -240,6 +255,7 @@ data = {
 all_in_one =[]
 type_course = [1,4,5,6]
 
+print('进行查课')
 
 courst_count = 0
 for b in type_course:
@@ -288,6 +304,9 @@ for b in type_course:
 #     print(all_in_one[a])
 
 #get xkkz_id
+
+print('尝试获取选课前置信息')
+
 res_6 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default')
 
 # print(res_6.status_code)
@@ -345,6 +364,8 @@ data = {
 
 online_course = []
 
+print('尝试对课程进行整理')
+
 a = 0
 for a in range(len(all_in_one)):
     data['kch_id'] = all_in_one[a]['kch_id']
@@ -375,6 +396,8 @@ for a in range(len(data_fin)):
 
 b=0
 
+print('进入选课流程')
+
 while 1:
     if selectOnline_flag is True:
         print('---------------进行自动选择网课---------------')
@@ -387,8 +410,12 @@ while 1:
     else:
         print('---------------请输入想要选择的课程的前缀编号(输入"-1"退出)---------------')
         a = int(input())
-        if a == -1:
+        if a <= -1:
             break
+        if a > len(data_fin)-1:
+            print(len(data_fin))
+            print('课程前缀编号不存在，请重试')
+            continue
     data = {
         'jxb_ids': data_fin[a]['jxb_ids'],
         'kch_id': data_fin[a]['kch_id'],
@@ -407,7 +434,7 @@ while 1:
         # 'xklc': '2',
         'xkxnm': xkxnm,
         'xkxqm': xkxqm,
-        'jcxx_id': '',  # 如果jcxx_id为空，可以省略
+        'jcxx_id': '',
     }
     res_8=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512',data)
     reji = json.loads(res_8.text)
@@ -467,5 +494,5 @@ while 1:
 # soup = BeautifulSoup(res_x.text,'html.parser')
 # reji = soup.find('input', attrs={'id': 'firstXkkzId'})['value']
 
-
+print('退出')
 session.close()

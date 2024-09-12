@@ -367,6 +367,7 @@ online_course = []
 print('尝试对课程进行整理')
 
 a = 0
+c = 0
 for a in range(len(all_in_one)):
     data['kch_id'] = all_in_one[a]['kch_id']
     res_7 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512',data)
@@ -385,11 +386,12 @@ for a in range(len(all_in_one)):
             reji['location'] = '网课'
             reji['time'] = '网课'
         data_fin.append(reji)
+        print(str(c)+'   '+data_fin[c]['name']+'   '+data_fin[c]['location']+'   '+data_fin[c]['time']+'   '+data_fin[c]['type'])
+        c+=1
 
 # 查单课part
 a = 0
 for a in range(len(data_fin)):
-    print(str(a)+'   '+data_fin[a]['name']+'   '+data_fin[a]['location']+'   '+data_fin[a]['time']+'   '+data_fin[a]['type'])
     if selectOnline_flag is True:
         if(data_fin[a]['location']=='网课'):
             online_course.append(a)

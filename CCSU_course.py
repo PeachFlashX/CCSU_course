@@ -18,6 +18,8 @@ import queue
 os.environ['HTTP_PROXY'] = ''
 os.environ['HTTPS_PROXY'] = ''
 
+
+
 with open('setting.json','r',encoding='utf-8') as file:
     reji = json.load(file)
 
@@ -26,7 +28,9 @@ with open('setting.json','r',encoding='utf-8') as file:
 
 username = reji['username']
 password = reji['password']
-selectOnline_flag = reji['autoSelectOnline']
+flag_AutoSelectOnline = reji['flag_AutoSelectOnline']
+flag_TimeStart = reji['flag_TimeStart']
+StartTime = reji['StartTime']
 
 
 session = requests.Session()
@@ -42,8 +46,27 @@ session.headers.update({'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)
 session.headers.update({'"Host': 'jwxt.jwc.ccsu.cn'})
 session.headers.update({'Connection': 'keep-alive'})
 
-print('尝试访问登录页')
+#time.mktime() struct_time转时间戳
+#time.time() 当前时间的时间戳
+#time.localtime() 时间戳转struct_time
+#time.strftime() 将struct_time转换为格式化的字符串
+#time.strptime() 将格式化的字符串转换为将struct_time
 
+if flag_TimeStart is True:
+    StartTime_unix = time.mktime(time.strptime(StartTime, '%Y-%m-%d %X'))
+    print('已启动定时,设定的启动时间:'+StartTime)
+    print('当前时间:'+time.strftime("%Y-%m-%d %X",time.localtime()))
+    while 1 == 1:
+        if time.time()>StartTime_unix-300:
+            print('当前时间为:'+time.strftime("%Y-%m-%d %X",time.localtime())+'距离设定时间还有5分钟,开始尝试登录')
+            break
+        else:
+            print('当前时间:'+time.strftime("%Y-%m-%d %X",time.localtime())+'等待距离设定时间前5分钟开始登录')
+            time.sleep(5)
+
+
+
+print('尝试访问登录页')
 try:
     res_1 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html')
 except:
@@ -165,7 +188,18 @@ print('登录成功 用户:'+name)
 # while 1 == 1:
 #     a=1
 
+
 #选/查课信息获取part
+
+if flag_TimeStart == True:
+    while 1 == 1:
+        if time.time()>StartTime_unix:
+            print('到达设定的启动时间,开始进行查课')
+            break
+        else:
+            print('当前时间:'+time.strftime("%Y-%m-%d %X",time.localtime())+'等待到达'+StartTime+'开始查课')
+            time.sleep(1)
+
 
 print('尝试获取查课前置信息')
 
@@ -417,7 +451,7 @@ for a in range(len(data_fin)):
 # 查单课part
 a = 0
 for a in range(len(data_fin)):
-    if selectOnline_flag is True:
+    if flag_AutoSelectOnline is True:
         if(data_fin[a]['location']=='网课'):
             online_course.append(a)
 
@@ -426,7 +460,7 @@ b=0
 print('进入选课流程')
 
 while 1:
-    if selectOnline_flag is True:
+    if flag_AutoSelectOnline is True:
         print('---------------进行自动选择网课---------------')
         if b>=len(online_course):
             print('没有更多网课')

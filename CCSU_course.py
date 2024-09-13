@@ -12,6 +12,8 @@ from cryptography.hazmat.backends import default_backend
 import re
 import six
 import jsFunction
+import threading
+import queue
 
 os.environ['HTTP_PROXY'] = ''
 os.environ['HTTPS_PROXY'] = ''
@@ -20,7 +22,6 @@ with open('setting.json','r',encoding='utf-8') as file:
     reji = json.load(file)
 
 # print(reji)
-
 
 
 username = reji['username']
@@ -254,6 +255,8 @@ data = {
 
 all_in_one =[]
 type_course = [1,4,5,6]
+queue_course = queue.Queue()
+
 
 print('进行查课')
 
@@ -289,6 +292,7 @@ for b in type_course:
                             reji['tmpList'][a]['type_course'] = '错误类'
                             print("m_err:课程类别判断错误")
             all_in_one.append(reji['tmpList'][a])
+            queue_course.put(reji['tmpList'][a])
         kspage += 10
         jspage += 10
         data['kspage']=kspage
@@ -366,28 +370,49 @@ online_course = []
 
 print('尝试对课程进行整理')
 
+lock = threading.Lock()
+
+def singleCourseSearch():
+    data_course_search = data
+    while 1 == 1:
+        try:
+            course_piece = queue_course.get(block=False)
+        except:
+            break
+        data_course_search['kch_id'] = course_piece['kch_id']
+        res_7 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512',data_course_search)
+        b = 0
+        reji_1_threading = json.loads(res_7.text)
+        for b in range(len(reji_1_threading)):
+            reji_threading = {
+                'name' : course_piece['kcmc'],
+                'kch_id' : course_piece['kch_id'],
+                'jxb_ids' : reji_1_threading[b]['do_jxb_id'],
+                'location' : reji_1_threading[b]['jxdd'],
+                'time' : reji_1_threading[b]['sksj'],
+                'type' : course_piece['type_course'],
+            }
+            if reji_threading['location'] == '--':
+                reji_threading['location'] = '网课'
+                reji_threading['time'] = '网课'
+            lock.acquire()
+            data_fin.append(reji_threading)
+            lock.release()
+
+threads = []
+for i in range(10):
+    t = threading.Thread(target=singleCourseSearch)
+    threads.append(t)
+
+for t in threads:
+    t.start()
+
+for t in threads:
+    t.join()
+
 a = 0
-c = 0
-for a in range(len(all_in_one)):
-    data['kch_id'] = all_in_one[a]['kch_id']
-    res_7 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512',data)
-    b = 0
-    reji_1 = json.loads(res_7.text)
-    for b in range(len(reji_1)):
-        reji = {
-            'name' : all_in_one[a]['kcmc'],
-            'kch_id' : all_in_one[a]['kch_id'],
-            'jxb_ids' : reji_1[b]['do_jxb_id'],
-            'location' : reji_1[b]['jxdd'],
-            'time' : reji_1[b]['sksj'],
-            'type' : all_in_one[a]['type_course'],
-        }
-        if reji['location'] == '--':
-            reji['location'] = '网课'
-            reji['time'] = '网课'
-        data_fin.append(reji)
-        print(str(c)+'   '+data_fin[c]['name']+'   '+data_fin[c]['location']+'   '+data_fin[c]['time']+'   '+data_fin[c]['type'])
-        c+=1
+for a in range(len(data_fin)):
+    print(str(a)+'   '+data_fin[a]['name']+'   '+data_fin[a]['location']+'   '+data_fin[a]['time']+'   '+data_fin[a]['type'])
 
 # 查单课part
 a = 0

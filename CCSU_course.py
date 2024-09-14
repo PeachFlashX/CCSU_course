@@ -289,6 +289,7 @@ data = {
 
 all_in_one =[]
 type_course = [1,4,5,6]
+already_course = []
 queue_course = queue.Queue()
 
 
@@ -311,6 +312,9 @@ for b in type_course:
         courst_count+=len(reji['tmpList'])
         a = 0
         for a in range(len(reji['tmpList'])):
+            if reji['tmpList'][a]['kch_id'] in already_course:
+                continue
+            already_course.append(reji['tmpList'][a]['kch_id'])
             if b == 1:
                 reji['tmpList'][a]['type_course'] = 'A类'
             else:

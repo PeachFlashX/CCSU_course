@@ -400,7 +400,8 @@ data = {
     'fxbj' : '0',
 }
 
-online_course = []
+
+# 查单课part
 
 print('尝试对课程进行整理')
 
@@ -448,17 +449,20 @@ a = 0
 for a in range(len(data_fin)):
     print(str(a)+'   '+data_fin[a]['name']+'   '+data_fin[a]['location']+'   '+data_fin[a]['time']+'   '+data_fin[a]['type'])
 
-# 查单课part
+# with open('data_fin.txt','w',encoding='utf-8') as file:
+#     file.write(data_fin.__str__())
+
+
+#网课list制作
+online_course = []
 a = 0
-for a in range(len(data_fin)):
-    if flag_AutoSelectOnline is True:
+if flag_AutoSelectOnline is True:
+    for a in range(len(data_fin)):
         if(data_fin[a]['location']=='网课'):
             online_course.append(a)
 
-b=0
-
 print('进入选课流程')
-
+b=0
 while 1:
     if flag_AutoSelectOnline is True:
         print('---------------进行自动选择网课---------------')
@@ -525,7 +529,7 @@ while 1:
 #     # 'xklc': '2',
 #     'xkxnm': xkxnm,
 #     'xkxqm': xkxqm,
-#     'jcxx_id': '',  # 如果jcxx_id为空，可以省略
+#     'jcxx_id': '',
 # }
 
 

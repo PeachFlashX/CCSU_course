@@ -293,7 +293,10 @@ already_course = []
 queue_course = queue.Queue()
 
 
+
 print('进行查课')
+
+
 
 courst_count = 0
 for b in type_course:

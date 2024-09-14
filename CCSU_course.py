@@ -413,22 +413,24 @@ lock = threading.Lock()
 
 def singleCourseSearch():
     data_course_search = data
+    session_threading = session
     while 1 == 1:
         try:
             course_piece = queue_course.get(block=False)
+            print(course_piece['kcmc'])
         except:
             break
         data_course_search['kch_id'] = course_piece['kch_id']
-        res_7 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512',data_course_search)
-        b = 0
-        reji_1_threading = json.loads(res_7.text)
-        for b in range(len(reji_1_threading)):
+        res_threading = session_threading.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512',data_course_search)
+        i_threading = 0
+        reji_1_threading = json.loads(res_threading.text)
+        for i_threading in range(len(reji_1_threading)):
             reji_threading = {
                 'name' : course_piece['kcmc'],
                 'kch_id' : course_piece['kch_id'],
-                'jxb_ids' : reji_1_threading[b]['do_jxb_id'],
-                'location' : reji_1_threading[b]['jxdd'],
-                'time' : reji_1_threading[b]['sksj'],
+                'jxb_ids' : reji_1_threading[i_threading]['do_jxb_id'],
+                'location' : reji_1_threading[i_threading]['jxdd'],
+                'time' : reji_1_threading[i_threading]['sksj'],
                 'type' : course_piece['type_course'],
             }
             if reji_threading['location'] == '--':
@@ -438,16 +440,20 @@ def singleCourseSearch():
             data_fin.append(reji_threading)
             lock.release()
 
-threads = []
-for i in range(10):
-    t = threading.Thread(target=singleCourseSearch)
-    threads.append(t)
+# threads = []
+# for i in range(10):
+#     t = threading.Thread(target=singleCourseSearch)
+#     threads.append(t)
 
-for t in threads:
-    t.start()
+# for t in threads:
+#     t.start()
 
-for t in threads:
-    t.join()
+# for t in threads:
+#     t.join()
+
+t = threading.Thread(target=singleCourseSearch)
+t.start()
+t.join()
 
 a = 0
 for a in range(len(data_fin)):

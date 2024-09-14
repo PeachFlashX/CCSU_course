@@ -412,16 +412,59 @@ print('尝试对课程进行整理')
 lock = threading.Lock()
 
 def singleCourseSearch():
-    data_course_search = data
+    data_course_search = {
+        'rwlx' : '2',
+        'xkly' : '0',
+        'bklx_id' : '0',
+        'sfkkjyxdxnxq' : '0',
+        'xqh_id' : xqh_id,
+        'jg_id' : jg_id,
+        'zyh_id' : zyh_id,
+        'zyfx_id' : zyfx_id,
+        'njdm_id' : njdm_id,
+        'bh_id' : bh_id,
+        'xbm' : xbm,
+        'xslbdm' : xslbdm,
+        'mzm' : mzm,
+        'xz' : xz,
+        'ccdm' : ccdm,
+        'xsbj' : xsbj,
+        'sfkknj' : '0',
+        'gnjkxdnj' : '0',
+        'sfkkzy' : '0',
+        'kzybkxy' : '0',
+        'sfznkx' : '0',
+        'zdkxms' : '0',
+        'sfkxq' : '0',
+        'sfkcfx' : '0',
+        'bbhzxjxb' : '0',
+        'kkbk' : '0',
+        'kkbkdj' : '0',
+        'xkxnm' : xkxnm,
+        'xkxqm' : xkxqm,
+        'xkxskcgskg' : '0',
+        'rlkz' : '0',
+        'kklxdm' : '10',#存疑
+        'kch_id' : '',#
+        'jxbzcxskg' : '0',
+        'xkkz_id' : xkkz_id,#
+        'cxbj' : '0',
+        'fxbj' : '0',
+    }
     session_threading = session
     while 1 == 1:
         try:
             course_piece = queue_course.get(block=False)
-            print(course_piece['kcmc'])
+            # print(course_piece['kcmc'])
         except:
             break
         data_course_search['kch_id'] = course_piece['kch_id']
+        # with lock:
+            # print(course_piece['kcmc'])
+            # print(course_piece)
         res_threading = session_threading.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512',data_course_search)
+            # print(res_threading.text)
+
         i_threading = 0
         reji_1_threading = json.loads(res_threading.text)
         for i_threading in range(len(reji_1_threading)):
@@ -436,24 +479,23 @@ def singleCourseSearch():
             if reji_threading['location'] == '--':
                 reji_threading['location'] = '网课'
                 reji_threading['time'] = '网课'
-            lock.acquire()
-            data_fin.append(reji_threading)
-            lock.release()
+            with lock:
+                data_fin.append(reji_threading)
 
-# threads = []
-# for i in range(10):
-#     t = threading.Thread(target=singleCourseSearch)
-#     threads.append(t)
+threads = []
+for i in range(10):
+    t = threading.Thread(target=singleCourseSearch)
+    threads.append(t)
 
-# for t in threads:
-#     t.start()
+for t in threads:
+    t.start()
 
-# for t in threads:
-#     t.join()
+for t in threads:
+    t.join()
 
-t = threading.Thread(target=singleCourseSearch)
-t.start()
-t.join()
+# t = threading.Thread(target=singleCourseSearch)
+# t.start()
+# t.join()
 
 a = 0
 for a in range(len(data_fin)):

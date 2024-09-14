@@ -2,6 +2,6 @@
     "username": "B202203023",
     "password": "",
     "flag_AutoSelectOnline": false,
-    "flag_TimeStart": true,
+    "flag_TimeStart": false,
     "StartTime": "2024-9-13 20:25:00"
 }

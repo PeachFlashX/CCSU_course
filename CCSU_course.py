@@ -18,6 +18,8 @@ import queue
 os.environ['HTTP_PROXY'] = ''
 os.environ['HTTPS_PROXY'] = ''
 
+
+
 with open('setting.json','r',encoding='utf-8') as file:
     reji = json.load(file)
 
@@ -26,7 +28,9 @@ with open('setting.json','r',encoding='utf-8') as file:
 
 username = reji['username']
 password = reji['password']
-selectOnline_flag = reji['autoSelectOnline']
+flag_AutoSelectOnline = reji['flag_AutoSelectOnline']
+flag_TimeStart = reji['flag_TimeStart']
+StartTime = reji['StartTime']
 
 
 session = requests.Session()
@@ -42,8 +46,27 @@ session.headers.update({'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)
 session.headers.update({'"Host': 'jwxt.jwc.ccsu.cn'})
 session.headers.update({'Connection': 'keep-alive'})
 
-print('尝试访问登录页')
+#time.mktime() struct_time转时间戳
+#time.time() 当前时间的时间戳
+#time.localtime() 时间戳转struct_time
+#time.strftime() 将struct_time转换为格式化的字符串
+#time.strptime() 将格式化的字符串转换为将struct_time
 
+if flag_TimeStart is True:
+    StartTime_unix = time.mktime(time.strptime(StartTime, '%Y-%m-%d %X'))
+    print('已启动定时,设定的启动时间:'+StartTime)
+    print('当前时间:'+time.strftime("%Y-%m-%d %X",time.localtime()))
+    while 1 == 1:
+        if time.time()>StartTime_unix-300:
+            print('当前时间为:'+time.strftime("%Y-%m-%d %X",time.localtime())+'距离设定时间还有5分钟,开始尝试登录')
+            break
+        else:
+            print('当前时间:'+time.strftime("%Y-%m-%d %X",time.localtime())+'等待距离设定时间前5分钟开始登录')
+            time.sleep(5)
+
+
+
+print('尝试访问登录页')
 try:
     res_1 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html')
 except:
@@ -165,7 +188,18 @@ print('登录成功 用户:'+name)
 # while 1 == 1:
 #     a=1
 
+
 #选/查课信息获取part
+
+if flag_TimeStart == True:
+    while 1 == 1:
+        if time.time()>StartTime_unix:
+            print('到达设定的启动时间,开始进行查课')
+            break
+        else:
+            print('当前时间:'+time.strftime("%Y-%m-%d %X",time.localtime())+'等待到达'+StartTime+'开始查课')
+            time.sleep(1)
+
 
 print('尝试获取查课前置信息')
 
@@ -255,9 +289,8 @@ data = {
 
 all_in_one =[]
 type_course = [1,4,5,6]
-queue_course = queue.Queue()
 already_course = []
-
+queue_course = queue.Queue()
 
 print('进行查课')
 
@@ -372,38 +405,83 @@ data = {
     'fxbj' : '0',
 }
 
-online_course = []
+
+# 查单课part
 
 print('尝试对课程进行整理')
 
 lock = threading.Lock()
 
 def singleCourseSearch():
-    data_course_search = data
+    data_course_search = {
+        'rwlx' : '2',
+        'xkly' : '0',
+        'bklx_id' : '0',
+        'sfkkjyxdxnxq' : '0',
+        'xqh_id' : xqh_id,
+        'jg_id' : jg_id,
+        'zyh_id' : zyh_id,
+        'zyfx_id' : zyfx_id,
+        'njdm_id' : njdm_id,
+        'bh_id' : bh_id,
+        'xbm' : xbm,
+        'xslbdm' : xslbdm,
+        'mzm' : mzm,
+        'xz' : xz,
+        'ccdm' : ccdm,
+        'xsbj' : xsbj,
+        'sfkknj' : '0',
+        'gnjkxdnj' : '0',
+        'sfkkzy' : '0',
+        'kzybkxy' : '0',
+        'sfznkx' : '0',
+        'zdkxms' : '0',
+        'sfkxq' : '0',
+        'sfkcfx' : '0',
+        'bbhzxjxb' : '0',
+        'kkbk' : '0',
+        'kkbkdj' : '0',
+        'xkxnm' : xkxnm,
+        'xkxqm' : xkxqm,
+        'xkxskcgskg' : '0',
+        'rlkz' : '0',
+        'kklxdm' : '10',#存疑
+        'kch_id' : '',#
+        'jxbzcxskg' : '0',
+        'xkkz_id' : xkkz_id,#
+        'cxbj' : '0',
+        'fxbj' : '0',
+    }
+    session_threading = session
     while 1 == 1:
         try:
             course_piece = queue_course.get(block=False)
+            # print(course_piece['kcmc'])
         except:
             break
         data_course_search['kch_id'] = course_piece['kch_id']
-        res_7 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512',data_course_search)
-        b = 0
-        reji_1_threading = json.loads(res_7.text)
-        for b in range(len(reji_1_threading)):
+        # with lock:
+            # print(course_piece['kcmc'])
+            # print(course_piece)
+        res_threading = session_threading.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512',data_course_search)
+            # print(res_threading.text)
+
+        i_threading = 0
+        reji_1_threading = json.loads(res_threading.text)
+        for i_threading in range(len(reji_1_threading)):
             reji_threading = {
                 'name' : course_piece['kcmc'],
                 'kch_id' : course_piece['kch_id'],
-                'jxb_ids' : reji_1_threading[b]['do_jxb_id'],
-                'location' : reji_1_threading[b]['jxdd'],
-                'time' : reji_1_threading[b]['sksj'],
+                'jxb_ids' : reji_1_threading[i_threading]['do_jxb_id'],
+                'location' : reji_1_threading[i_threading]['jxdd'],
+                'time' : reji_1_threading[i_threading]['sksj'],
                 'type' : course_piece['type_course'],
             }
             if reji_threading['location'] == '--':
                 reji_threading['location'] = '网课'
                 reji_threading['time'] = '网课'
-            lock.acquire()
-            data_fin.append(reji_threading)
-            lock.release()
+            with lock:
+                data_fin.append(reji_threading)
 
 threads = []
 for i in range(10):
@@ -416,23 +494,30 @@ for t in threads:
 for t in threads:
     t.join()
 
+# t = threading.Thread(target=singleCourseSearch)
+# t.start()
+# t.join()
+
 a = 0
 for a in range(len(data_fin)):
     print(str(a)+'   '+data_fin[a]['name']+'   '+data_fin[a]['location']+'   '+data_fin[a]['time']+'   '+data_fin[a]['type'])
 
-# 查单课part
+# with open('data_fin.txt','w',encoding='utf-8') as file:
+#     file.write(data_fin.__str__())
+
+
+#网课list制作
+online_course = []
 a = 0
-for a in range(len(data_fin)):
-    if selectOnline_flag is True:
+if flag_AutoSelectOnline is True:
+    for a in range(len(data_fin)):
         if(data_fin[a]['location']=='网课'):
             online_course.append(a)
 
-b=0
-
 print('进入选课流程')
-
+b=0
 while 1:
-    if selectOnline_flag is True:
+    if flag_AutoSelectOnline is True:
         print('---------------进行自动选择网课---------------')
         if b>=len(online_course):
             print('没有更多网课')
@@ -497,7 +582,7 @@ while 1:
 #     # 'xklc': '2',
 #     'xkxnm': xkxnm,
 #     'xkxqm': xkxqm,
-#     'jcxx_id': '',  # 如果jcxx_id为空，可以省略
+#     'jcxx_id': '',
 # }
 
 

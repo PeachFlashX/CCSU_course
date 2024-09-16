@@ -30,6 +30,8 @@
 
 6.多线程的单课查询(已完成)
 
+7.选择课程后的冲突课程排除/重查
+
 ---
 
 [RSA 加密部分(jsFunction.py)来自,很难不磕一个](https://github.com/Kunz1Pro/CUMT-jwxt/tree/master)

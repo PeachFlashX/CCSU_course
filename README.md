@@ -8,6 +8,20 @@
 
 ---
 
+##setting.json 说明:
+
+"flag_AutoSelectOnline" 填入 true/false 打开自动选网课
+
+"flag_TimeStart" 填入 true/false 打开定时启动
+
+"StartTime" 填入 "x-x-x x:x:x" 即 "年-月-日 时:分:秒" 设置定时启动的时间
+
+"flag_AutoSelectKeyWord" 填入 true/false 打开根据关键字的自动选课
+
+"KeyWord" []中填入想要匹配的关键字
+
+---
+
 ## 想要运行源代码？
 
 所需模块安装:

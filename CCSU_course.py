@@ -30,8 +30,12 @@ username = reji['username']
 password = reji['password']
 flag_AutoSelectOnline = reji['flag_AutoSelectOnline']
 flag_TimeStart = reji['flag_TimeStart']
-StartTime = reji['StartTime']
+flag_AutoSelectKeyWord = reji['flag_AutoSelectKeyWord']
 
+flag_input = not (flag_AutoSelectOnline|flag_AutoSelectKeyWord)
+
+StartTime = reji['StartTime']
+list_keyword = reji['KeyWord']
 
 session = requests.Session()
 
@@ -71,6 +75,8 @@ try:
     res_1 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html')
 except:
     print("err 1:请求失败,请尝试关闭系统代理")
+    session.close()
+    time.sleep(3)
     sys.exit()
 
 # print(res_1.status_code)
@@ -85,6 +91,8 @@ try:
     csrftoken = data_csrftoken['value']
 except:
     print("err 2:请求失败,请尝试关闭系统代理")
+    session.close()
+    time.sleep(3)
     sys.exit()
 
 # print(csrftoken)
@@ -174,6 +182,7 @@ name = soup.find('h4', class_='media-heading')
 if name is None:
     print('登录失败,请检查setting.json中的username与password是否正确')
     session.close()
+    time.sleep(3)
     sys.exit()
 name = str(name)
 name = name.lstrip('<h4 class="media-heading">')
@@ -209,24 +218,60 @@ res_4 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt//xsxk/zzxkyzb_cxZzxkYzbIndex
 # print(res_4.headers)
 # print(res_4.text)
 
+
+# with open('data_not_time.html','w',encoding='utf-8') as file:
+#     file.write(str(res_4.text))
+
+
 soup = BeautifulSoup(res_4.text,'html.parser')
-xqh_id = soup.find('input', attrs={'id': 'xqh_id'})['value']
-jg_id = soup.find('input', attrs={'id': 'jg_id_1'})['value']
-njdm_id = soup.find('input',attrs={'id':'njdm_id'})['value']
-njdm_id_1 = soup.find('input',attrs={'id':'njdm_id_1'})['value']
-zyh_id = soup.find('input',attrs={'id':'zyh_id'})['value']
-zyh_id_1 = soup.find('input',attrs={'id':'zyh_id_1'})['value']
-zyfx_id = soup.find('input',attrs={'id':'zyfx_id'})['value']
-bh_id = soup.find('input',attrs={'id':'bh_id'})['value']
-xbm = soup.find('input',attrs={'id':'xbm'})['value']
-xslbdm = soup.find('input',attrs={'id':'xslbdm'})['value']
-mzm = soup.find('input',attrs={'id':'mzm'})['value']
-xz = soup.find('input',attrs={'id':'xz'})['value']
-ccdm = soup.find('input',attrs={'id':'ccdm'})['value']
-xsbj = soup.find('input',attrs={'id':'xsbj'})['value']
-xkxnm = soup.find('input',attrs={'id':'xkxnm'})['value']
-xkxqm = soup.find('input',attrs={'id':'xkxqm'})['value']
-kklxdm = soup.find('input',attrs={'id':'kklxdm'})['value']
+
+try:
+    # msg = soup.find('div',class_='nodata')
+    # print(msg)
+    # print('err3:当前不是选课时间或发生异常')
+    # session.close()
+    # time.sleep(3)
+    # sys.exit()
+    xqh_id = soup.find('input', attrs={'id': 'xqh_id'})['value']
+    jg_id = soup.find('input', attrs={'id': 'jg_id_1'})['value']
+    njdm_id = soup.find('input',attrs={'id':'njdm_id'})['value']
+    njdm_id_1 = soup.find('input',attrs={'id':'njdm_id_1'})['value']
+    zyh_id = soup.find('input',attrs={'id':'zyh_id'})['value']
+    zyh_id_1 = soup.find('input',attrs={'id':'zyh_id_1'})['value']
+    zyfx_id = soup.find('input',attrs={'id':'zyfx_id'})['value']
+    bh_id = soup.find('input',attrs={'id':'bh_id'})['value']
+    xbm = soup.find('input',attrs={'id':'xbm'})['value']
+    xslbdm = soup.find('input',attrs={'id':'xslbdm'})['value']
+    mzm = soup.find('input',attrs={'id':'mzm'})['value']
+    xz = soup.find('input',attrs={'id':'xz'})['value']
+    ccdm = soup.find('input',attrs={'id':'ccdm'})['value']
+    xsbj = soup.find('input',attrs={'id':'xsbj'})['value']
+    xkxnm = soup.find('input',attrs={'id':'xkxnm'})['value']
+    xkxqm = soup.find('input',attrs={'id':'xkxqm'})['value']
+    kklxdm = soup.find('input',attrs={'id':'kklxdm'})['value']
+except:
+    print('err3:当前不是选课时间或发生异常')
+    session.close()
+    time.sleep(3)
+    sys.exit()
+
+# xqh_id = soup.find('input', attrs={'id': 'xqh_id'})['value']
+# jg_id = soup.find('input', attrs={'id': 'jg_id_1'})['value']
+# njdm_id = soup.find('input',attrs={'id':'njdm_id'})['value']
+# njdm_id_1 = soup.find('input',attrs={'id':'njdm_id_1'})['value']
+# zyh_id = soup.find('input',attrs={'id':'zyh_id'})['value']
+# zyh_id_1 = soup.find('input',attrs={'id':'zyh_id_1'})['value']
+# zyfx_id = soup.find('input',attrs={'id':'zyfx_id'})['value']
+# bh_id = soup.find('input',attrs={'id':'bh_id'})['value']
+# xbm = soup.find('input',attrs={'id':'xbm'})['value']
+# xslbdm = soup.find('input',attrs={'id':'xslbdm'})['value']
+# mzm = soup.find('input',attrs={'id':'mzm'})['value']
+# xz = soup.find('input',attrs={'id':'xz'})['value']
+# ccdm = soup.find('input',attrs={'id':'ccdm'})['value']
+# xsbj = soup.find('input',attrs={'id':'xsbj'})['value']
+# xkxnm = soup.find('input',attrs={'id':'xkxnm'})['value']
+# xkxqm = soup.find('input',attrs={'id':'xkxqm'})['value']
+# kklxdm = soup.find('input',attrs={'id':'kklxdm'})['value']
 
 
 
@@ -288,7 +333,7 @@ data = {
 # print(data)
 
 all_in_one =[]
-type_course = [1,4,5,6]
+type_course = [1,4,5,6] #A,B,C,D类
 already_course = []
 queue_course = queue.Queue()
 
@@ -304,7 +349,7 @@ for b in type_course:
     kspage = 1
     jspage = 10
     data['kspage'] = kspage
-    data['jspage'] = jspage
+    data['jspage'] = jspage #或许可以一次查询全部?
     res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data)
 
     # print(res_5.status_code)
@@ -516,6 +561,16 @@ if flag_AutoSelectOnline is True:
         if(data_fin[a]['location']=='网课'):
             online_course.append(a)
 
+#关键字list制作
+keyword_course = []
+a = 0
+if flag_AutoSelectKeyWord is True:
+    for a in range(len(data_fin)):
+        for b in list_keyword:
+            if b in data_fin[a]['name']:
+                keyword_course.append(a)
+                break
+
 print('进入选课流程')
 b=0
 while 1:
@@ -527,7 +582,17 @@ while 1:
         else:
             a=online_course[b]
             b+=1
-    else:
+            
+    if flag_AutoSelectKeyWord is True:
+        print('---------------进行自动选择关键字课---------------')
+        if b>=len(keyword_course):
+            print('没有更多关键字课')
+            break
+        else:
+            a=keyword_course[b]
+            b+=1
+
+    if flag_input is True:
         print('---------------请输入想要选择的课程的前缀编号(输入"-1"退出)---------------')
         a = int(input())
         if a <= -1:
@@ -536,6 +601,7 @@ while 1:
             print(len(data_fin))
             print('课程前缀编号不存在，请重试')
             continue
+
     data = {
         'jxb_ids': data_fin[a]['jxb_ids'],
         'kch_id': data_fin[a]['kch_id'],

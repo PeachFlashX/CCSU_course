@@ -606,8 +606,8 @@ while 1:
 
 
 
-# # with open('data_get_xkkzid.html','w',encoding='utf-8') as file:
-# #     file.write(str(res_x.text))
+# with open('data_get_xkkzid.html','w',encoding='utf-8') as file:
+#     file.write(str(res_x.text))
 
 # soup = BeautifulSoup(res_x.text,'html.parser')
 # reji = soup.find('input', attrs={'id': 'firstXkkzId'})['value']

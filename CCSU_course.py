@@ -523,6 +523,7 @@ def singleCourseSearch():
                 'location' : reji_1_threading[i_threading]['jxdd'],
                 'time' : reji_1_threading[i_threading]['sksj'],
                 'type' : course_piece['type_course'],
+                'teacher' : reji_1_threading[i_threading]['jsxx']
             }
             if reji_threading['location'] == '--':
                 reji_threading['location'] = '网课'
@@ -547,7 +548,7 @@ for t in threads:
 
 a = 0
 for a in range(len(data_fin)):
-    print(str(a)+'   '+data_fin[a]['name']+'   '+data_fin[a]['location']+'   '+data_fin[a]['time']+'   '+data_fin[a]['type'])
+    print(str(a)+'   '+data_fin[a]['name']+'   '+data_fin[a]['location']+'   '+data_fin[a]['time']+'   '+data_fin[a]['type']+'   '+data_fin[a]['teacher'])
 
 # with open('data_fin.txt','w',encoding='utf-8') as file:
 #     file.write(data_fin.__str__())
@@ -568,6 +569,9 @@ if flag_AutoSelectKeyWord is True:
     for a in range(len(data_fin)):
         for b in list_keyword:
             if b in data_fin[a]['name']:
+                keyword_course.append(a)
+                break
+            if b in data_fin[a]['teacher']:
                 keyword_course.append(a)
                 break
 

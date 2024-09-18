@@ -71,13 +71,20 @@ if flag_TimeStart is True:
 
 
 print('尝试访问登录页')
-try:
-    res_1 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html')
-except:
-    print("err 1:请求失败,请尝试关闭系统代理")
-    session.close()
-    time.sleep(3)
-    sys.exit()
+
+count_time = 0
+while 1 == 1:
+    try:
+        res_1 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html')
+        break
+    except requests.exceptions.ProxyError:
+        print("err 1:请求失败,请尝试关闭系统代理")
+        session.close()
+        time.sleep(3)
+        sys.exit()
+    except requests.exceptions.Timeout:
+        count_time+=1
+        print('请求超时,进行第'+count_time+'次尝试')
 
 # print(res_1.status_code)
 # print(res_1.text)
@@ -90,7 +97,7 @@ data_csrftoken = soup.find('input', attrs={'id': 'csrftoken'})
 try:
     csrftoken = data_csrftoken['value']
 except:
-    print("err 2:请求失败,请尝试关闭系统代理")
+    print("err 2:请求数据错误,请尝试关闭系统代理")
     session.close()
     time.sleep(3)
     sys.exit()
@@ -108,7 +115,14 @@ tm=str(int(time.time()*1000))
 
 print('尝试获取加密公钥')
 
-res_2 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_getPublicKey.html?time='+tm+'&_='+tm)
+count_time = 0
+while 1 == 1:
+    try:
+        res_2 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_getPublicKey.html?time='+tm+'&_='+tm)
+        break
+    except requests.exceptions.Timeout:
+        count_time+=1
+        print('请求超时,进行第'+count_time+'次尝试')
 # print(res_2.text)
 
 reji=json.loads(res_2.text)
@@ -163,8 +177,14 @@ data = {
     }
 
 print('尝试登录')
-
-res_3 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html?time='+str(int(time.time()*1000)),data)
+count_time = 0
+while 1 == 1:
+    try:
+        res_3 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html?time='+str(int(time.time()*1000)),data)
+        break
+    except requests.exceptions.Timeout:
+        count_time+=1
+        print('请求超时,进行第'+count_time+'次尝试')
 # print(res_3.status_code)
 # print(res_3.headers)
 # print(res_3.text)
@@ -174,7 +194,13 @@ res_3 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html?time
 print('尝试获取用户名')
 
 tm=str(int(time.time()*1000))
-res_getName = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/index_cxYhxxIndex.html?xt=jw&localeKey=zh_CN&_='+tm+'&gnmkdm=index')
+while 1 == 1:
+    try:
+        res_getName = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/index_cxYhxxIndex.html?xt=jw&localeKey=zh_CN&_='+tm+'&gnmkdm=index')
+        break
+    except requests.exceptions.Timeout:
+        count_time+=1
+        print('请求超时,进行第'+count_time+'次尝试')
 
 soup = BeautifulSoup(res_getName.text,'html.parser')
 name = soup.find('h4', class_='media-heading')
@@ -212,7 +238,13 @@ if flag_TimeStart == True:
 
 print('尝试获取查课前置信息')
 
-res_4 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt//xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default')
+while 1 == 1:
+    try:
+        res_4 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt//xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default')
+        break
+    except requests.exceptions.Timeout:
+        count_time+=1
+        print('请求超时,进行第'+count_time+'次尝试')
 
 # print(res_4.status_code)
 # print(res_4.headers)
@@ -350,7 +382,14 @@ for b in type_course:
     jspage = 10
     data['kspage'] = kspage
     data['jspage'] = jspage #或许可以一次查询全部?
-    res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data)
+    count_time = 0
+    while 1 == 1:
+        try:
+            res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data)
+            break
+        except requests.exceptions.Timeout:
+            count_time+=1
+            print('请求超时,进行第'+count_time+'次尝试')
 
     # print(res_5.status_code)
     # print(res_5.headers)
@@ -383,7 +422,14 @@ for b in type_course:
         jspage += 10
         data['kspage']=kspage
         data['jspage']=jspage
-        res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data)
+        count_time = 0
+        while 1 == 1:
+            try:
+                res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data)
+                break
+            except requests.exceptions.Timeout:
+                count_time+=1
+                print('请求超时,进行第'+count_time+'次尝试')
         reji = json.loads(res_5.text)
 
 # print(reji['tmpList'])
@@ -396,8 +442,14 @@ for b in type_course:
 #get xkkz_id
 
 print('尝试获取选课前置信息')
-
-res_6 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default')
+count_time = 0
+while 1 == 1:
+    try:
+        res_6 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default')
+        break
+    except requests.exceptions.Timeout:
+        count_time+=1
+        print('请求超时,进行第'+count_time+'次尝试')
 
 # print(res_6.status_code)
 # print(res_6.headers)
@@ -460,6 +512,7 @@ print('尝试对课程进行整理')
 lock = threading.Lock()
 
 def singleCourseSearch():
+    count_time_threading = 0
     data_course_search = {
         'rwlx' : '2',
         'xkly' : '0',
@@ -510,7 +563,14 @@ def singleCourseSearch():
         # with lock:
             # print(course_piece['kcmc'])
             # print(course_piece)
-        res_threading = session_threading.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512',data_course_search)
+        count_time_threading = 0
+        while 1 == 1:
+            try:
+                res_threading = session_threading.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512',data_course_search)
+                break
+            except requests.exceptions.Timeout:
+                count_time_threading+=1
+                print('请求超时,进行第'+count_time_threading+'次尝试')
             # print(res_threading.text)
 
         i_threading = 0
@@ -626,7 +686,14 @@ while 1:
         'xkxqm': xkxqm,
         'jcxx_id': '',
     }
-    res_8=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512',data)
+    count_time = 0
+    while 1 == 1:
+        try:
+            res_8=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512',data)
+            break
+        except requests.exceptions.Timeout:
+                count_time+=1
+                print('请求超时,进行第'+count_time+'次尝试')
     reji = json.loads(res_8.text)
     if reji['flag'] == '1':
         print('选择课程'+'"'+data_fin[a]['name']+'"成功')

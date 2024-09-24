@@ -10,7 +10,7 @@
 
 ## 想要运行源代码？
 
-所需模块安装:
+所需包安装:
 
 `pip install cryptography requests bs4 rsa six`
 

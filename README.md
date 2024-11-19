@@ -28,6 +28,10 @@
 
 `pip install cryptography requests bs4 rsa six`
 
+or
+
+`pip install -r requirements.txt`
+
 ---
 
 ## 待办事项

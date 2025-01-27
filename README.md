@@ -8,7 +8,7 @@
 
 ---
 
-##setting.json 说明:
+## setting.json 说明:
 
 "flag_AutoSelectOnline" 填入 true/false 打开自动选网课
 

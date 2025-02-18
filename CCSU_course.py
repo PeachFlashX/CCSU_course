@@ -75,7 +75,7 @@ print('尝试访问登录页')
 count_time = 0
 while 1 == 1:
     try:
-        res_1 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html')
+        res_1 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html',timeout=10)
         break
     except requests.exceptions.ProxyError:
         print("err 1:请求失败,请尝试关闭系统代理")
@@ -118,7 +118,7 @@ print('尝试获取加密公钥')
 count_time = 0
 while 1 == 1:
     try:
-        res_2 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_getPublicKey.html?time='+tm+'&_='+tm)
+        res_2 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_getPublicKey.html?time='+tm+'&_='+tm,timeout=10)
         break
     except requests.exceptions.Timeout:
         count_time+=1
@@ -180,7 +180,7 @@ print('尝试登录')
 count_time = 0
 while 1 == 1:
     try:
-        res_3 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html?time='+str(int(time.time()*1000)),data)
+        res_3 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html?time='+str(int(time.time()*1000)),data = data,timeout=10)
         break
     except requests.exceptions.Timeout:
         count_time+=1
@@ -196,7 +196,7 @@ print('尝试获取用户名')
 tm=str(int(time.time()*1000))
 while 1 == 1:
     try:
-        res_getName = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/index_cxYhxxIndex.html?xt=jw&localeKey=zh_CN&_='+tm+'&gnmkdm=index')
+        res_getName = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/index_cxYhxxIndex.html?xt=jw&localeKey=zh_CN&_='+tm+'&gnmkdm=index',timeout=10)
         break
     except requests.exceptions.Timeout:
         count_time+=1
@@ -240,7 +240,7 @@ print('尝试获取查课前置信息')
 
 while 1 == 1:
     try:
-        res_4 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt//xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default')
+        res_4 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt//xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default',timeout=10)
         break
     except requests.exceptions.Timeout:
         count_time+=1
@@ -385,7 +385,7 @@ for b in type_course:
     count_time = 0
     while 1 == 1:
         try:
-            res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data)
+            res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data,timeout=10)
             break
         except requests.exceptions.Timeout:
             count_time+=1
@@ -425,7 +425,7 @@ for b in type_course:
         count_time = 0
         while 1 == 1:
             try:
-                res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data)
+                res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data,timeout=10)
                 break
             except requests.exceptions.Timeout:
                 count_time+=1
@@ -445,7 +445,7 @@ print('尝试获取选课前置信息')
 count_time = 0
 while 1 == 1:
     try:
-        res_6 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default')
+        res_6 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default',timeout=10)
         break
     except requests.exceptions.Timeout:
         count_time+=1
@@ -566,7 +566,7 @@ def singleCourseSearch():
         count_time_threading = 0
         while 1 == 1:
             try:
-                res_threading = session_threading.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512',data_course_search)
+                res_threading = session_threading.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512',data_course_search,timeout=10)
                 break
             except requests.exceptions.Timeout:
                 count_time_threading+=1
@@ -689,7 +689,7 @@ while 1:
     count_time = 0
     while 1 == 1:
         try:
-            res_8=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512',data)
+            res_8=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512',data,timeout=10)
             break
         except requests.exceptions.Timeout:
                 count_time+=1

@@ -15,8 +15,7 @@ import jsFunction
 import threading
 import queue
 
-os.environ['HTTP_PROXY'] = ''
-os.environ['HTTPS_PROXY'] = ''
+os.environ['no_proxy'] = 'jwxt.jwc.ccsu.cn'
 
 
 
@@ -38,6 +37,8 @@ StartTime = reji['StartTime']
 list_keyword = reji['KeyWord']
 
 session = requests.Session()
+session.proxies={}
+print("Session proxies:", session.proxies)
 
 session.headers.update({'Accept': 'application/json'})
 session.headers.update({'accept-language': 'zh-CN,zh;q=0.9'})
@@ -238,13 +239,33 @@ if flag_TimeStart == True:
 
 print('尝试获取查课前置信息')
 
+xqh_id = None
+jg_id = None
+njdm_id = None
+njdm_id_1 = None
+zyh_id = None
+zyh_id_1 = None
+zyfx_id = None
+bh_id = None
+xbm = None
+xslbdm = None
+mzm = None
+xz = None
+ccdm = None
+xsbj = None
+xkxnm = None
+xkxqm = None
+kklxdm = None
+
+
 while 1 == 1:
-    try:
-        res_4 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt//xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default',timeout=10)
-        break
-    except requests.exceptions.Timeout:
-        count_time+=1
-        print('请求超时,进行第'+count_time+'次尝试')
+    while 1 == 1:
+        try:
+            res_4 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt//xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default',timeout=10)
+            break
+        except requests.exceptions.Timeout:
+            count_time+=1
+            print('请求超时,进行第'+count_time+'次尝试')
 
 # print(res_4.status_code)
 # print(res_4.headers)
@@ -255,37 +276,29 @@ while 1 == 1:
 #     file.write(str(res_4.text))
 
 
-soup = BeautifulSoup(res_4.text,'html.parser')
+    soup = BeautifulSoup(res_4.text,'html.parser')
 
-try:
-    # msg = soup.find('div',class_='nodata')
-    # print(msg)
-    # print('err3:当前不是选课时间或发生异常')
-    # session.close()
-    # time.sleep(3)
-    # sys.exit()
-    xqh_id = soup.find('input', attrs={'id': 'xqh_id'})['value']
-    jg_id = soup.find('input', attrs={'id': 'jg_id_1'})['value']
-    njdm_id = soup.find('input',attrs={'id':'njdm_id'})['value']
-    njdm_id_1 = soup.find('input',attrs={'id':'njdm_id_1'})['value']
-    zyh_id = soup.find('input',attrs={'id':'zyh_id'})['value']
-    zyh_id_1 = soup.find('input',attrs={'id':'zyh_id_1'})['value']
-    zyfx_id = soup.find('input',attrs={'id':'zyfx_id'})['value']
-    bh_id = soup.find('input',attrs={'id':'bh_id'})['value']
-    xbm = soup.find('input',attrs={'id':'xbm'})['value']
-    xslbdm = soup.find('input',attrs={'id':'xslbdm'})['value']
-    mzm = soup.find('input',attrs={'id':'mzm'})['value']
-    xz = soup.find('input',attrs={'id':'xz'})['value']
-    ccdm = soup.find('input',attrs={'id':'ccdm'})['value']
-    xsbj = soup.find('input',attrs={'id':'xsbj'})['value']
-    xkxnm = soup.find('input',attrs={'id':'xkxnm'})['value']
-    xkxqm = soup.find('input',attrs={'id':'xkxqm'})['value']
-    kklxdm = soup.find('input',attrs={'id':'kklxdm'})['value']
-except:
-    print('err3:当前不是选课时间或发生异常')
-    session.close()
-    time.sleep(3)
-    sys.exit()
+    try:
+        xqh_id = soup.find('input', attrs={'id': 'xqh_id'})['value']
+        jg_id = soup.find('input', attrs={'id': 'jg_id_1'})['value']
+        njdm_id = soup.find('input',attrs={'id':'njdm_id'})['value']
+        njdm_id_1 = soup.find('input',attrs={'id':'njdm_id_1'})['value']
+        zyh_id = soup.find('input',attrs={'id':'zyh_id'})['value']
+        zyh_id_1 = soup.find('input',attrs={'id':'zyh_id_1'})['value']
+        zyfx_id = soup.find('input',attrs={'id':'zyfx_id'})['value']
+        bh_id = soup.find('input',attrs={'id':'bh_id'})['value']
+        xbm = soup.find('input',attrs={'id':'xbm'})['value']
+        xslbdm = soup.find('input',attrs={'id':'xslbdm'})['value']
+        mzm = soup.find('input',attrs={'id':'mzm'})['value']
+        xz = soup.find('input',attrs={'id':'xz'})['value']
+        ccdm = soup.find('input',attrs={'id':'ccdm'})['value']
+        xsbj = soup.find('input',attrs={'id':'xsbj'})['value']
+        xkxnm = soup.find('input',attrs={'id':'xkxnm'})['value']
+        xkxqm = soup.find('input',attrs={'id':'xkxqm'})['value']
+        kklxdm = soup.find('input',attrs={'id':'kklxdm'})['value']
+        break
+    except:
+        print('当前不是选课时间或发生异常 重试获取查课前置信息')
 
 # xqh_id = soup.find('input', attrs={'id': 'xqh_id'})['value']
 # jg_id = soup.find('input', attrs={'id': 'jg_id_1'})['value']
@@ -442,14 +455,20 @@ for b in type_course:
 #get xkkz_id
 
 print('尝试获取选课前置信息')
+
+data_fin = []
 count_time = 0
+xkkz_id = None
+res_6 = None
+
 while 1 == 1:
-    try:
-        res_6 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default',timeout=10)
-        break
-    except requests.exceptions.Timeout:
-        count_time+=1
-        print('请求超时,进行第'+count_time+'次尝试')
+    while 1 == 1:
+        try:
+            res_6 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default',timeout=10)
+            break
+        except requests.exceptions.Timeout:
+            count_time+=1
+            print('请求超时,进行第'+count_time+'次尝试')
 
 # print(res_6.status_code)
 # print(res_6.headers)
@@ -460,49 +479,52 @@ while 1 == 1:
 # with open('k.html','w',encoding='utf-8') as file:
 #     file.write(str(res_x.text))
 
-soup = BeautifulSoup(res_6.text,'html.parser')
-xkkz_id = soup.find('input', attrs={'id': 'firstXkkzId'})['value']
+    try:
+        soup = BeautifulSoup(res_6.text,'html.parser')
+        xkkz_id = soup.find('input', attrs={'id': 'firstXkkzId'})['value']
 
-data_fin = []
-data = {
-    'rwlx' : '2',
-    'xkly' : '0',
-    'bklx_id' : '0',
-    'sfkkjyxdxnxq' : '0',
-    'xqh_id' : xqh_id,
-    'jg_id' : jg_id,
-    'zyh_id' : zyh_id,
-    'zyfx_id' : zyfx_id,
-    'njdm_id' : njdm_id,
-    'bh_id' : bh_id,
-    'xbm' : xbm,
-    'xslbdm' : xslbdm,
-    'mzm' : mzm,
-    'xz' : xz,
-    'ccdm' : ccdm,
-    'xsbj' : xsbj,
-    'sfkknj' : '0',
-    'gnjkxdnj' : '0',
-    'sfkkzy' : '0',
-    'kzybkxy' : '0',
-    'sfznkx' : '0',
-    'zdkxms' : '0',
-    'sfkxq' : '0',
-    'sfkcfx' : '0',
-    'bbhzxjxb' : '0',
-    'kkbk' : '0',
-    'kkbkdj' : '0',
-    'xkxnm' : xkxnm,
-    'xkxqm' : xkxqm,
-    'xkxskcgskg' : '0',
-    'rlkz' : '0',
-    'kklxdm' : '10',#存疑
-    'kch_id' : '0AA4AAB7194305E2E0638C28C4DA40C4',#
-    'jxbzcxskg' : '0',
-    'xkkz_id' : xkkz_id,#
-    'cxbj' : '0',
-    'fxbj' : '0',
-}
+        data = {
+            'rwlx' : '2',
+            'xkly' : '0',
+            'bklx_id' : '0',
+            'sfkkjyxdxnxq' : '0',
+            'xqh_id' : xqh_id,
+            'jg_id' : jg_id,
+            'zyh_id' : zyh_id,
+            'zyfx_id' : zyfx_id,
+            'njdm_id' : njdm_id,
+            'bh_id' : bh_id,
+            'xbm' : xbm,
+            'xslbdm' : xslbdm,
+            'mzm' : mzm,
+            'xz' : xz,
+            'ccdm' : ccdm,
+            'xsbj' : xsbj,
+            'sfkknj' : '0',
+            'gnjkxdnj' : '0',
+            'sfkkzy' : '0',
+            'kzybkxy' : '0',
+            'sfznkx' : '0',
+            'zdkxms' : '0',
+            'sfkxq' : '0',
+            'sfkcfx' : '0',
+            'bbhzxjxb' : '0',
+            'kkbk' : '0',
+            'kkbkdj' : '0',
+            'xkxnm' : xkxnm,
+            'xkxqm' : xkxqm,
+            'xkxskcgskg' : '0',
+            'rlkz' : '0',
+            'kklxdm' : '10',#存疑
+            'kch_id' : '0AA4AAB7194305E2E0638C28C4DA40C4',#
+            'jxbzcxskg' : '0',
+            'xkkz_id' : xkkz_id,#
+            'cxbj' : '0',
+            'fxbj' : '0',
+        }
+        break
+    except:
+        print('获取选课前置信息失败 进行重试')
 
 
 # 查单课part
@@ -554,11 +576,11 @@ def singleCourseSearch():
     }
     session_threading = session
     while 1 == 1:
-        try:
+        with lock:
+            if queue_course.empty():
+                break
             course_piece = queue_course.get(block=False)
             # print(course_piece['kcmc'])
-        except:
-            break
         data_course_search['kch_id'] = course_piece['kch_id']
         # with lock:
             # print(course_piece['kcmc'])
@@ -601,10 +623,6 @@ for t in threads:
 
 for t in threads:
     t.join()
-
-# t = threading.Thread(target=singleCourseSearch)
-# t.start()
-# t.join()
 
 a = 0
 for a in range(len(data_fin)):

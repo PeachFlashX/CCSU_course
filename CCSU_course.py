@@ -85,7 +85,7 @@ while 1 == 1:
         sys.exit()
     except requests.exceptions.Timeout:
         count_time+=1
-        print('请求超时,进行第'+count_time+'次尝试')
+        print('请求超时,进行第'+str(count_time)+'次尝试')
 
 # print(res_1.status_code)
 # print(res_1.text)
@@ -123,7 +123,7 @@ while 1 == 1:
         break
     except requests.exceptions.Timeout:
         count_time+=1
-        print('请求超时,进行第'+count_time+'次尝试')
+        print('请求超时,进行第'+str(count_time)+'次尝试')
 # print(res_2.text)
 
 reji=json.loads(res_2.text)
@@ -185,7 +185,7 @@ while 1 == 1:
         break
     except requests.exceptions.Timeout:
         count_time+=1
-        print('请求超时,进行第'+count_time+'次尝试')
+        print('登录 请求超时,进行第'+str(count_time)+'次尝试')
 # print(res_3.status_code)
 # print(res_3.headers)
 # print(res_3.text)
@@ -194,6 +194,7 @@ while 1 == 1:
 
 print('尝试获取用户名')
 
+count_time=0
 tm=str(int(time.time()*1000))
 while 1 == 1:
     try:
@@ -201,7 +202,7 @@ while 1 == 1:
         break
     except requests.exceptions.Timeout:
         count_time+=1
-        print('请求超时,进行第'+count_time+'次尝试')
+        print('用户名 请求超时,进行第'+str(count_time)+'次尝试')
 
 soup = BeautifulSoup(res_getName.text,'html.parser')
 name = soup.find('h4', class_='media-heading')
@@ -258,6 +259,7 @@ xkxqm = None
 kklxdm = None
 
 
+count_time = 0
 while 1 == 1:
     while 1 == 1:
         try:
@@ -265,7 +267,7 @@ while 1 == 1:
             break
         except requests.exceptions.Timeout:
             count_time+=1
-            print('请求超时,进行第'+count_time+'次尝试')
+            print('查课前置信息 请求超时,进行第'+str(count_time)+'次尝试')
 
 # print(res_4.status_code)
 # print(res_4.headers)
@@ -298,7 +300,8 @@ while 1 == 1:
         kklxdm = soup.find('input',attrs={'id':'kklxdm'})['value']
         break
     except:
-        print('当前不是选课时间或发生异常 重试获取查课前置信息')
+        count_time+=1
+        print('当前不是选课时间或发生异常 '+str(count_time)+' 次重试获取查课前置信息')
 
 # xqh_id = soup.find('input', attrs={'id': 'xqh_id'})['value']
 # jg_id = soup.find('input', attrs={'id': 'jg_id_1'})['value']
@@ -402,7 +405,7 @@ for b in type_course:
             break
         except requests.exceptions.Timeout:
             count_time+=1
-            print('请求超时,进行第'+count_time+'次尝试')
+            print('总课程请求超时,进行第'+str(count_time)+'次尝试')
 
     # print(res_5.status_code)
     # print(res_5.headers)
@@ -442,7 +445,7 @@ for b in type_course:
                 break
             except requests.exceptions.Timeout:
                 count_time+=1
-                print('请求超时,进行第'+count_time+'次尝试')
+                print('总课程 '+kspage+' '+jspage + ' 请求超时,进行第'+str(count_time)+'次尝试')
         reji = json.loads(res_5.text)
 
 # print(reji['tmpList'])
@@ -468,7 +471,7 @@ while 1 == 1:
             break
         except requests.exceptions.Timeout:
             count_time+=1
-            print('请求超时,进行第'+count_time+'次尝试')
+            print('选课前置信息 请求超时,进行第'+str(count_time)+'次尝试')
 
 # print(res_6.status_code)
 # print(res_6.headers)
@@ -478,7 +481,6 @@ while 1 == 1:
 
 # with open('k.html','w',encoding='utf-8') as file:
 #     file.write(str(res_x.text))
-
     try:
         soup = BeautifulSoup(res_6.text,'html.parser')
         xkkz_id = soup.find('input', attrs={'id': 'firstXkkzId'})['value']
@@ -524,7 +526,7 @@ while 1 == 1:
         }
         break
     except:
-        print('获取选课前置信息失败 进行重试')
+        print('获取选课前置信息失败 进行第'+str(count_time)+'次重试')
 
 
 # 查单课part
@@ -592,7 +594,7 @@ def singleCourseSearch():
                 break
             except requests.exceptions.Timeout:
                 count_time_threading+=1
-                print('请求超时,进行第'+count_time_threading+'次尝试')
+                print('请求超时,进行第'+str(count_time_threading)+'次尝试')
             # print(res_threading.text)
 
         i_threading = 0
@@ -711,7 +713,7 @@ while 1:
             break
         except requests.exceptions.Timeout:
                 count_time+=1
-                print('请求超时,进行第'+count_time+'次尝试')
+                print('选课 请求超时,进行第'+str(count_time)+'次尝试')
     reji = json.loads(res_8.text)
     if reji['flag'] == '1':
         print('选择课程'+'"'+data_fin[a]['name']+'"成功')

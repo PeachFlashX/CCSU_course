@@ -38,7 +38,6 @@ list_keyword = reji['KeyWord']
 
 session = requests.Session()
 session.proxies={}
-print("Session proxies:", session.proxies)
 
 session.headers.update({'Accept': 'application/json'})
 session.headers.update({'accept-language': 'zh-CN,zh;q=0.9'})

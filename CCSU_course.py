@@ -30,8 +30,9 @@ password = reji['password']
 flag_AutoSelectOnline = reji['flag_AutoSelectOnline']
 flag_TimeStart = reji['flag_TimeStart']
 flag_AutoSelectKeyWord = reji['flag_AutoSelectKeyWord']
+flag_TrySteal = reji['flag_TrySteal']
 
-flag_input = not (flag_AutoSelectOnline|flag_AutoSelectKeyWord)
+flag_input = not (flag_AutoSelectOnline|flag_AutoSelectKeyWord|flag_TrySteal)
 
 StartTime = reji['StartTime']
 list_keyword = reji['KeyWord']
@@ -327,7 +328,6 @@ while 1 == 1:
 # kklxdm = soup.find('input',attrs={'id':'kklxdm'})['value']
 
 
-
 # print(session.headers)
 session.headers.pop('content-type')
 session.headers.update({'referer': 'http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default'})
@@ -384,6 +384,8 @@ data = {
     'jxbzb': '',
 }
 # print(data)
+if(flag_TrySteal==1):
+    data.pop('yl_list[0]')
 
 all_in_one =[]
 type_course = [1,4,5,6] #A,B,C,D类
@@ -653,7 +655,7 @@ for a in range(len(data_fin)):
 #网课list制作
 online_course = []
 a = 0
-if flag_AutoSelectOnline is True:
+if flag_AutoSelectOnline is True or flag_TrySteal is True:
     for a in range(len(data_fin)):
         if(data_fin[a]['location']=='网课'):
             online_course.append(a)
@@ -674,6 +676,13 @@ if flag_AutoSelectKeyWord is True:
 print('进入选课流程')
 b=0
 while 1:
+    if flag_TrySteal is True:
+        print('---------------进行课程捡漏---------------')
+        if b>=len(online_course):
+            print("一轮")
+            b=0
+        a=online_course[b]
+        b+=1
     if flag_AutoSelectOnline is True:
         print('---------------进行自动选择网课---------------')
         if b>=len(online_course):
@@ -735,6 +744,8 @@ while 1:
     reji = json.loads(res_8.text)
     if reji['flag'] == '1':
         print('选择课程'+'"'+data_fin[a]['name']+'"成功')
+        if(flag_TrySteal):
+            online_course.pop(a)
     else:
         print('选择课程'+'"'+data_fin[a]['name']+'"失败')
         print('错误信息:'+reji['msg'])

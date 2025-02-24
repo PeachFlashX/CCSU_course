@@ -742,11 +742,16 @@ while 1:
         except:
             print('发生其他错误 进行第'+str(count_time)+'次重试')
     reji = json.loads(res_8.text)
-    if reji['flag'] == '1':
-        print('选择课程'+'"'+data_fin[a]['name']+'"成功')
+    # print(type(reji))
+    if 'flag' in reji:
+        if reji['flag'] == '1':
+            print('选择课程'+'"'+data_fin[a]['name']+'"成功')
+        else:
+            print('选择课程'+'"'+data_fin[a]['name']+'"失败')
+            if 'msg' in reji:
+                print('错误信息:'+reji['msg'])
     else:
         print('选择课程'+'"'+data_fin[a]['name']+'"失败')
-        print('错误信息:'+reji['msg'])
 
 
 # 选课part

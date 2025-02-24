@@ -744,8 +744,6 @@ while 1:
     reji = json.loads(res_8.text)
     if reji['flag'] == '1':
         print('选择课程'+'"'+data_fin[a]['name']+'"成功')
-        if(flag_TrySteal):
-            online_course.pop(a)
     else:
         print('选择课程'+'"'+data_fin[a]['name']+'"失败')
         print('错误信息:'+reji['msg'])

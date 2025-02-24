@@ -76,6 +76,9 @@ count_time = 0
 while 1 == 1:
     try:
         res_1 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html',timeout=10)
+        soup=BeautifulSoup(res_1.text,'html.parser')
+        data_csrftoken = soup.find('input', attrs={'id': 'csrftoken'})
+        csrftoken = data_csrftoken['value']
         break
     except requests.exceptions.ProxyError:
         print("err 1:请求失败,请尝试关闭系统代理")
@@ -85,22 +88,10 @@ while 1 == 1:
     except requests.exceptions.Timeout:
         count_time+=1
         print('请求超时,进行第'+str(count_time)+'次尝试')
+    except:
+        count_time+=1
+        print('发生其他错误,进行第'+str(count_time)+'次尝试')
 
-# print(res_1.status_code)
-# print(res_1.text)
-
-soup=BeautifulSoup(res_1.text,'html.parser')
-
-# print(soup.title.string)
-
-data_csrftoken = soup.find('input', attrs={'id': 'csrftoken'})
-try:
-    csrftoken = data_csrftoken['value']
-except:
-    print("err 2:请求数据错误,请尝试关闭系统代理")
-    session.close()
-    time.sleep(3)
-    sys.exit()
 
 # print(csrftoken)
 
@@ -123,6 +114,9 @@ while 1 == 1:
     except requests.exceptions.Timeout:
         count_time+=1
         print('请求超时,进行第'+str(count_time)+'次尝试')
+    except:
+        count_time+=1
+        print('发生其他错误,进行第'+str(count_time)+'次尝试')
 # print(res_2.text)
 
 reji=json.loads(res_2.text)
@@ -185,6 +179,9 @@ while 1 == 1:
     except requests.exceptions.Timeout:
         count_time+=1
         print('登录 请求超时,进行第'+str(count_time)+'次尝试')
+    except:
+        count_time+=1
+        print('发生其他错误,进行第'+str(count_time)+'次尝试')
 # print(res_3.status_code)
 # print(res_3.headers)
 # print(res_3.text)
@@ -202,6 +199,9 @@ while 1 == 1:
     except requests.exceptions.Timeout:
         count_time+=1
         print('用户名 请求超时,进行第'+str(count_time)+'次尝试')
+    except:
+        count_time+=1
+        print('发生其他错误,进行第'+str(count_time)+'次尝试')
 
 soup = BeautifulSoup(res_getName.text,'html.parser')
 name = soup.find('h4', class_='media-heading')
@@ -267,6 +267,9 @@ while 1 == 1:
         except requests.exceptions.Timeout:
             count_time+=1
             print('查课前置信息 请求超时,进行第'+str(count_time)+'次尝试')
+        except:
+            count_time+=1
+            print('发生其他错误,进行第'+str(count_time)+'次尝试')
 
 # print(res_4.status_code)
 # print(res_4.headers)
@@ -301,6 +304,9 @@ while 1 == 1:
     except:
         count_time+=1
         print('当前不是选课时间或发生异常 '+str(count_time)+' 次重试获取查课前置信息')
+
+# with open('data_not_time.html','w',encoding='utf-8') as file:
+#     file.write(str(res_4.text))
 
 # xqh_id = soup.find('input', attrs={'id': 'xqh_id'})['value']
 # jg_id = soup.find('input', attrs={'id': 'jg_id_1'})['value']
@@ -405,6 +411,9 @@ for b in type_course:
         except requests.exceptions.Timeout:
             count_time+=1
             print('总课程请求超时,进行第'+str(count_time)+'次尝试')
+        except:
+            count_time+=1
+            print('发生其他错误,进行第'+str(count_time)+'次尝试')
 
     # print(res_5.status_code)
     # print(res_5.headers)
@@ -445,6 +454,9 @@ for b in type_course:
             except requests.exceptions.Timeout:
                 count_time+=1
                 print('总课程 '+kspage+' '+jspage + ' 请求超时,进行第'+str(count_time)+'次尝试')
+            except:
+                count_time+=1
+                print('发生其他错误,进行第'+str(count_time)+'次尝试')
         reji = json.loads(res_5.text)
 
 # print(reji['tmpList'])
@@ -471,6 +483,9 @@ while 1 == 1:
         except requests.exceptions.Timeout:
             count_time+=1
             print('选课前置信息 请求超时,进行第'+str(count_time)+'次尝试')
+        except:
+            count_time+=1
+            print('发生其他错误,进行第'+str(count_time)+'次尝试')
 
 # print(res_6.status_code)
 # print(res_6.headers)
@@ -594,6 +609,8 @@ def singleCourseSearch():
             except requests.exceptions.Timeout:
                 count_time_threading+=1
                 print('请求超时,进行第'+str(count_time_threading)+'次尝试')
+            except:
+                print('发生其他错误 进行第'+str(count_time_threading)+'次重试')
             # print(res_threading.text)
 
         i_threading = 0
@@ -713,6 +730,8 @@ while 1:
         except requests.exceptions.Timeout:
                 count_time+=1
                 print('选课 请求超时,进行第'+str(count_time)+'次尝试')
+        except:
+            print('发生其他错误 进行第'+str(count_time)+'次重试')
     reji = json.loads(res_8.text)
     if reji['flag'] == '1':
         print('选择课程'+'"'+data_fin[a]['name']+'"成功')

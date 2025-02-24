@@ -15,8 +15,7 @@ import jsFunction
 import threading
 import queue
 
-os.environ['HTTP_PROXY'] = ''
-os.environ['HTTPS_PROXY'] = ''
+os.environ['no_proxy'] = 'jwxt.jwc.ccsu.cn'
 
 
 
@@ -30,10 +29,16 @@ username = reji['username']
 password = reji['password']
 flag_AutoSelectOnline = reji['flag_AutoSelectOnline']
 flag_TimeStart = reji['flag_TimeStart']
-StartTime = reji['StartTime']
+flag_AutoSelectKeyWord = reji['flag_AutoSelectKeyWord']
+flag_TrySteal = reji['flag_TrySteal']
 
+flag_input = not (flag_AutoSelectOnline|flag_AutoSelectKeyWord|flag_TrySteal)
+
+StartTime = reji['StartTime']
+list_keyword = reji['KeyWord']
 
 session = requests.Session()
+session.proxies={}
 
 session.headers.update({'Accept': 'application/json'})
 session.headers.update({'accept-language': 'zh-CN,zh;q=0.9'})
@@ -67,25 +72,27 @@ if flag_TimeStart is True:
 
 
 print('尝试访问登录页')
-try:
-    res_1 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html')
-except:
-    print("err 1:请求失败,请尝试关闭系统代理")
-    sys.exit()
 
-# print(res_1.status_code)
-# print(res_1.text)
+count_time = 0
+while 1 == 1:
+    try:
+        res_1 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html',timeout=10)
+        soup=BeautifulSoup(res_1.text,'html.parser')
+        data_csrftoken = soup.find('input', attrs={'id': 'csrftoken'})
+        csrftoken = data_csrftoken['value']
+        break
+    except requests.exceptions.ProxyError:
+        print("err 1:请求失败,请尝试关闭系统代理")
+        session.close()
+        time.sleep(3)
+        sys.exit()
+    except requests.exceptions.Timeout:
+        count_time+=1
+        print('请求超时,进行第'+str(count_time)+'次尝试')
+    except:
+        count_time+=1
+        print('发生其他错误,进行第'+str(count_time)+'次尝试')
 
-soup=BeautifulSoup(res_1.text,'html.parser')
-
-# print(soup.title.string)
-
-data_csrftoken = soup.find('input', attrs={'id': 'csrftoken'})
-try:
-    csrftoken = data_csrftoken['value']
-except:
-    print("err 2:请求失败,请尝试关闭系统代理")
-    sys.exit()
 
 # print(csrftoken)
 
@@ -100,7 +107,17 @@ tm=str(int(time.time()*1000))
 
 print('尝试获取加密公钥')
 
-res_2 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_getPublicKey.html?time='+tm+'&_='+tm)
+count_time = 0
+while 1 == 1:
+    try:
+        res_2 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_getPublicKey.html?time='+tm+'&_='+tm,timeout=10)
+        break
+    except requests.exceptions.Timeout:
+        count_time+=1
+        print('请求超时,进行第'+str(count_time)+'次尝试')
+    except:
+        count_time+=1
+        print('发生其他错误,进行第'+str(count_time)+'次尝试')
 # print(res_2.text)
 
 reji=json.loads(res_2.text)
@@ -155,8 +172,17 @@ data = {
     }
 
 print('尝试登录')
-
-res_3 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html?time='+str(int(time.time()*1000)),data)
+count_time = 0
+while 1 == 1:
+    try:
+        res_3 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html?time='+str(int(time.time()*1000)),data = data,timeout=10)
+        break
+    except requests.exceptions.Timeout:
+        count_time+=1
+        print('登录 请求超时,进行第'+str(count_time)+'次尝试')
+    except:
+        count_time+=1
+        print('发生其他错误,进行第'+str(count_time)+'次尝试')
 # print(res_3.status_code)
 # print(res_3.headers)
 # print(res_3.text)
@@ -165,8 +191,18 @@ res_3 = session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/login_slogin.html?time
 
 print('尝试获取用户名')
 
+count_time=0
 tm=str(int(time.time()*1000))
-res_getName = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/index_cxYhxxIndex.html?xt=jw&localeKey=zh_CN&_='+tm+'&gnmkdm=index')
+while 1 == 1:
+    try:
+        res_getName = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xtgl/index_cxYhxxIndex.html?xt=jw&localeKey=zh_CN&_='+tm+'&gnmkdm=index',timeout=10)
+        break
+    except requests.exceptions.Timeout:
+        count_time+=1
+        print('用户名 请求超时,进行第'+str(count_time)+'次尝试')
+    except:
+        count_time+=1
+        print('发生其他错误,进行第'+str(count_time)+'次尝试')
 
 soup = BeautifulSoup(res_getName.text,'html.parser')
 name = soup.find('h4', class_='media-heading')
@@ -174,6 +210,7 @@ name = soup.find('h4', class_='media-heading')
 if name is None:
     print('登录失败,请检查setting.json中的username与password是否正确')
     session.close()
+    time.sleep(3)
     sys.exit()
 name = str(name)
 name = name.lstrip('<h4 class="media-heading">')
@@ -203,31 +240,92 @@ if flag_TimeStart == True:
 
 print('尝试获取查课前置信息')
 
-res_4 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt//xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default')
+xqh_id = None
+jg_id = None
+njdm_id = None
+njdm_id_1 = None
+zyh_id = None
+zyh_id_1 = None
+zyfx_id = None
+bh_id = None
+xbm = None
+xslbdm = None
+mzm = None
+xz = None
+ccdm = None
+xsbj = None
+xkxnm = None
+xkxqm = None
+kklxdm = None
+
+
+count_time = 0
+while 1 == 1:
+    while 1 == 1:
+        try:
+            res_4 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt//xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default',timeout=10)
+            break
+        except requests.exceptions.Timeout:
+            count_time+=1
+            print('查课前置信息 请求超时,进行第'+str(count_time)+'次尝试')
+        except:
+            count_time+=1
+            print('发生其他错误,进行第'+str(count_time)+'次尝试')
 
 # print(res_4.status_code)
 # print(res_4.headers)
 # print(res_4.text)
 
-soup = BeautifulSoup(res_4.text,'html.parser')
-xqh_id = soup.find('input', attrs={'id': 'xqh_id'})['value']
-jg_id = soup.find('input', attrs={'id': 'jg_id_1'})['value']
-njdm_id = soup.find('input',attrs={'id':'njdm_id'})['value']
-njdm_id_1 = soup.find('input',attrs={'id':'njdm_id_1'})['value']
-zyh_id = soup.find('input',attrs={'id':'zyh_id'})['value']
-zyh_id_1 = soup.find('input',attrs={'id':'zyh_id_1'})['value']
-zyfx_id = soup.find('input',attrs={'id':'zyfx_id'})['value']
-bh_id = soup.find('input',attrs={'id':'bh_id'})['value']
-xbm = soup.find('input',attrs={'id':'xbm'})['value']
-xslbdm = soup.find('input',attrs={'id':'xslbdm'})['value']
-mzm = soup.find('input',attrs={'id':'mzm'})['value']
-xz = soup.find('input',attrs={'id':'xz'})['value']
-ccdm = soup.find('input',attrs={'id':'ccdm'})['value']
-xsbj = soup.find('input',attrs={'id':'xsbj'})['value']
-xkxnm = soup.find('input',attrs={'id':'xkxnm'})['value']
-xkxqm = soup.find('input',attrs={'id':'xkxqm'})['value']
-kklxdm = soup.find('input',attrs={'id':'kklxdm'})['value']
 
+# with open('data_not_time.html','w',encoding='utf-8') as file:
+#     file.write(str(res_4.text))
+
+
+    soup = BeautifulSoup(res_4.text,'html.parser')
+
+    try:
+        xqh_id = soup.find('input', attrs={'id': 'xqh_id'})['value']
+        jg_id = soup.find('input', attrs={'id': 'jg_id_1'})['value']
+        njdm_id = soup.find('input',attrs={'id':'njdm_id'})['value']
+        njdm_id_1 = soup.find('input',attrs={'id':'njdm_id_1'})['value']
+        zyh_id = soup.find('input',attrs={'id':'zyh_id'})['value']
+        zyh_id_1 = soup.find('input',attrs={'id':'zyh_id_1'})['value']
+        zyfx_id = soup.find('input',attrs={'id':'zyfx_id'})['value']
+        bh_id = soup.find('input',attrs={'id':'bh_id'})['value']
+        xbm = soup.find('input',attrs={'id':'xbm'})['value']
+        xslbdm = soup.find('input',attrs={'id':'xslbdm'})['value']
+        mzm = soup.find('input',attrs={'id':'mzm'})['value']
+        xz = soup.find('input',attrs={'id':'xz'})['value']
+        ccdm = soup.find('input',attrs={'id':'ccdm'})['value']
+        xsbj = soup.find('input',attrs={'id':'xsbj'})['value']
+        xkxnm = soup.find('input',attrs={'id':'xkxnm'})['value']
+        xkxqm = soup.find('input',attrs={'id':'xkxqm'})['value']
+        kklxdm = soup.find('input',attrs={'id':'kklxdm'})['value']
+        break
+    except:
+        count_time+=1
+        print('当前不是选课时间或发生异常 '+str(count_time)+' 次重试获取查课前置信息')
+
+# with open('data_not_time.html','w',encoding='utf-8') as file:
+#     file.write(str(res_4.text))
+
+# xqh_id = soup.find('input', attrs={'id': 'xqh_id'})['value']
+# jg_id = soup.find('input', attrs={'id': 'jg_id_1'})['value']
+# njdm_id = soup.find('input',attrs={'id':'njdm_id'})['value']
+# njdm_id_1 = soup.find('input',attrs={'id':'njdm_id_1'})['value']
+# zyh_id = soup.find('input',attrs={'id':'zyh_id'})['value']
+# zyh_id_1 = soup.find('input',attrs={'id':'zyh_id_1'})['value']
+# zyfx_id = soup.find('input',attrs={'id':'zyfx_id'})['value']
+# bh_id = soup.find('input',attrs={'id':'bh_id'})['value']
+# xbm = soup.find('input',attrs={'id':'xbm'})['value']
+# xslbdm = soup.find('input',attrs={'id':'xslbdm'})['value']
+# mzm = soup.find('input',attrs={'id':'mzm'})['value']
+# xz = soup.find('input',attrs={'id':'xz'})['value']
+# ccdm = soup.find('input',attrs={'id':'ccdm'})['value']
+# xsbj = soup.find('input',attrs={'id':'xsbj'})['value']
+# xkxnm = soup.find('input',attrs={'id':'xkxnm'})['value']
+# xkxqm = soup.find('input',attrs={'id':'xkxqm'})['value']
+# kklxdm = soup.find('input',attrs={'id':'kklxdm'})['value']
 
 
 # print(session.headers)
@@ -286,9 +384,11 @@ data = {
     'jxbzb': '',
 }
 # print(data)
+if(flag_TrySteal==1):
+    data.pop('yl_list[0]')
 
 all_in_one =[]
-type_course = [1,4,5,6]
+type_course = [1,4,5,6] #A,B,C,D类
 already_course = []
 queue_course = queue.Queue()
 
@@ -302,8 +402,18 @@ for b in type_course:
     kspage = 1
     jspage = 10
     data['kspage'] = kspage
-    data['jspage'] = jspage
-    res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data)
+    data['jspage'] = jspage #或许可以一次查询全部?
+    count_time = 0
+    while 1 == 1:
+        try:
+            res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data,timeout=10)
+            break
+        except requests.exceptions.Timeout:
+            count_time+=1
+            print('总课程请求超时,进行第'+str(count_time)+'次尝试')
+        except:
+            count_time+=1
+            print('发生其他错误,进行第'+str(count_time)+'次尝试')
 
     # print(res_5.status_code)
     # print(res_5.headers)
@@ -336,7 +446,17 @@ for b in type_course:
         jspage += 10
         data['kspage']=kspage
         data['jspage']=jspage
-        res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data)
+        count_time = 0
+        while 1 == 1:
+            try:
+                res_5=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512',data,timeout=10)
+                break
+            except requests.exceptions.Timeout:
+                count_time+=1
+                print('总课程 '+kspage+' '+jspage + ' 请求超时,进行第'+str(count_time)+'次尝试')
+            except:
+                count_time+=1
+                print('发生其他错误,进行第'+str(count_time)+'次尝试')
         reji = json.loads(res_5.text)
 
 # print(reji['tmpList'])
@@ -350,7 +470,22 @@ for b in type_course:
 
 print('尝试获取选课前置信息')
 
-res_6 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default')
+data_fin = []
+count_time = 0
+xkkz_id = None
+res_6 = None
+
+while 1 == 1:
+    while 1 == 1:
+        try:
+            res_6 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default',timeout=10)
+            break
+        except requests.exceptions.Timeout:
+            count_time+=1
+            print('选课前置信息 请求超时,进行第'+str(count_time)+'次尝试')
+        except:
+            count_time+=1
+            print('发生其他错误,进行第'+str(count_time)+'次尝试')
 
 # print(res_6.status_code)
 # print(res_6.headers)
@@ -360,50 +495,52 @@ res_6 = session.get('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.
 
 # with open('k.html','w',encoding='utf-8') as file:
 #     file.write(str(res_x.text))
+    try:
+        soup = BeautifulSoup(res_6.text,'html.parser')
+        xkkz_id = soup.find('input', attrs={'id': 'firstXkkzId'})['value']
 
-soup = BeautifulSoup(res_6.text,'html.parser')
-xkkz_id = soup.find('input', attrs={'id': 'firstXkkzId'})['value']
-
-data_fin = []
-data = {
-    'rwlx' : '2',
-    'xkly' : '0',
-    'bklx_id' : '0',
-    'sfkkjyxdxnxq' : '0',
-    'xqh_id' : xqh_id,
-    'jg_id' : jg_id,
-    'zyh_id' : zyh_id,
-    'zyfx_id' : zyfx_id,
-    'njdm_id' : njdm_id,
-    'bh_id' : bh_id,
-    'xbm' : xbm,
-    'xslbdm' : xslbdm,
-    'mzm' : mzm,
-    'xz' : xz,
-    'ccdm' : ccdm,
-    'xsbj' : xsbj,
-    'sfkknj' : '0',
-    'gnjkxdnj' : '0',
-    'sfkkzy' : '0',
-    'kzybkxy' : '0',
-    'sfznkx' : '0',
-    'zdkxms' : '0',
-    'sfkxq' : '0',
-    'sfkcfx' : '0',
-    'bbhzxjxb' : '0',
-    'kkbk' : '0',
-    'kkbkdj' : '0',
-    'xkxnm' : xkxnm,
-    'xkxqm' : xkxqm,
-    'xkxskcgskg' : '0',
-    'rlkz' : '0',
-    'kklxdm' : '10',#存疑
-    'kch_id' : '0AA4AAB7194305E2E0638C28C4DA40C4',#
-    'jxbzcxskg' : '0',
-    'xkkz_id' : xkkz_id,#
-    'cxbj' : '0',
-    'fxbj' : '0',
-}
+        data = {
+            'rwlx' : '2',
+            'xkly' : '0',
+            'bklx_id' : '0',
+            'sfkkjyxdxnxq' : '0',
+            'xqh_id' : xqh_id,
+            'jg_id' : jg_id,
+            'zyh_id' : zyh_id,
+            'zyfx_id' : zyfx_id,
+            'njdm_id' : njdm_id,
+            'bh_id' : bh_id,
+            'xbm' : xbm,
+            'xslbdm' : xslbdm,
+            'mzm' : mzm,
+            'xz' : xz,
+            'ccdm' : ccdm,
+            'xsbj' : xsbj,
+            'sfkknj' : '0',
+            'gnjkxdnj' : '0',
+            'sfkkzy' : '0',
+            'kzybkxy' : '0',
+            'sfznkx' : '0',
+            'zdkxms' : '0',
+            'sfkxq' : '0',
+            'sfkcfx' : '0',
+            'bbhzxjxb' : '0',
+            'kkbk' : '0',
+            'kkbkdj' : '0',
+            'xkxnm' : xkxnm,
+            'xkxqm' : xkxqm,
+            'xkxskcgskg' : '0',
+            'rlkz' : '0',
+            'kklxdm' : '10',#存疑
+            'kch_id' : '0AA4AAB7194305E2E0638C28C4DA40C4',#
+            'jxbzcxskg' : '0',
+            'xkkz_id' : xkkz_id,#
+            'cxbj' : '0',
+            'fxbj' : '0',
+        }
+        break
+    except:
+        print('获取选课前置信息失败 进行第'+str(count_time)+'次重试')
 
 
 # 查单课part
@@ -413,6 +550,7 @@ print('尝试对课程进行整理')
 lock = threading.Lock()
 
 def singleCourseSearch():
+    count_time_threading = 0
     data_course_search = {
         'rwlx' : '2',
         'xkly' : '0',
@@ -454,16 +592,25 @@ def singleCourseSearch():
     }
     session_threading = session
     while 1 == 1:
-        try:
+        with lock:
+            if queue_course.empty():
+                break
             course_piece = queue_course.get(block=False)
             # print(course_piece['kcmc'])
-        except:
-            break
         data_course_search['kch_id'] = course_piece['kch_id']
         # with lock:
             # print(course_piece['kcmc'])
             # print(course_piece)
-        res_threading = session_threading.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512',data_course_search)
+        count_time_threading = 0
+        while 1 == 1:
+            try:
+                res_threading = session_threading.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512',data_course_search,timeout=10)
+                break
+            except requests.exceptions.Timeout:
+                count_time_threading+=1
+                print('请求超时,进行第'+str(count_time_threading)+'次尝试')
+            except:
+                print('发生其他错误 进行第'+str(count_time_threading)+'次重试')
             # print(res_threading.text)
 
         i_threading = 0
@@ -476,6 +623,7 @@ def singleCourseSearch():
                 'location' : reji_1_threading[i_threading]['jxdd'],
                 'time' : reji_1_threading[i_threading]['sksj'],
                 'type' : course_piece['type_course'],
+                'teacher' : reji_1_threading[i_threading]['jsxx']
             }
             if reji_threading['location'] == '--':
                 reji_threading['location'] = '网课'
@@ -494,13 +642,9 @@ for t in threads:
 for t in threads:
     t.join()
 
-# t = threading.Thread(target=singleCourseSearch)
-# t.start()
-# t.join()
-
 a = 0
 for a in range(len(data_fin)):
-    print(str(a)+'   '+data_fin[a]['name']+'   '+data_fin[a]['location']+'   '+data_fin[a]['time']+'   '+data_fin[a]['type'])
+    print(str(a)+'   '+data_fin[a]['name']+'   '+data_fin[a]['location']+'   '+data_fin[a]['time']+'   '+data_fin[a]['type']+'   '+data_fin[a]['teacher'])
 
 # with open('data_fin.txt','w',encoding='utf-8') as file:
 #     file.write(data_fin.__str__())
@@ -509,14 +653,43 @@ for a in range(len(data_fin)):
 #网课list制作
 online_course = []
 a = 0
-if flag_AutoSelectOnline is True:
+if flag_AutoSelectOnline is True or flag_TrySteal is True:
     for a in range(len(data_fin)):
         if(data_fin[a]['location']=='网课'):
             online_course.append(a)
 
+#关键字list制作
+keyword_course = []
+a = 0
+if flag_AutoSelectKeyWord is True:
+    for a in range(len(data_fin)):
+        for b in list_keyword:
+            if b in data_fin[a]['name']:
+                keyword_course.append(a)
+                break
+            if b in data_fin[a]['teacher']:
+                keyword_course.append(a)
+                break
+
 print('进入选课流程')
 b=0
+TrySteal_now_get = 0
+count_online_course = len(online_course)
+TrySteal_time = 1
+
+if flag_TrySteal == True:
+    print("---------------开始课程捡漏尝试---------------")
+    print("可尝试的网课总数: "+str(len(online_course)))
+
 while 1:
+    if flag_TrySteal is True:
+        if b>=len(online_course):
+            TrySteal_time+=1
+            print("已成功捡漏 "+str(TrySteal_now_get)+" 门课程")
+            print("---------------开始第"+str(TrySteal_time)+"轮课程捡漏尝试---------------")
+            b=0
+        a=online_course[b]
+        b+=1
     if flag_AutoSelectOnline is True:
         print('---------------进行自动选择网课---------------')
         if b>=len(online_course):
@@ -525,7 +698,17 @@ while 1:
         else:
             a=online_course[b]
             b+=1
-    else:
+            
+    if flag_AutoSelectKeyWord is True:
+        print('---------------进行自动选择关键字课---------------')
+        if b>=len(keyword_course):
+            print('没有更多关键字课')
+            break
+        else:
+            a=keyword_course[b]
+            b+=1
+
+    if flag_input is True:
         print('---------------请输入想要选择的课程的前缀编号(输入"-1"退出)---------------')
         a = int(input())
         if a <= -1:
@@ -534,6 +717,7 @@ while 1:
             print(len(data_fin))
             print('课程前缀编号不存在，请重试')
             continue
+
     data = {
         'jxb_ids': data_fin[a]['jxb_ids'],
         'kch_id': data_fin[a]['kch_id'],
@@ -554,13 +738,29 @@ while 1:
         'xkxqm': xkxqm,
         'jcxx_id': '',
     }
-    res_8=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512',data)
+    count_time = 0
+    while 1 == 1:
+        try:
+            res_8=session.post('http://jwxt.jwc.ccsu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512',data,timeout=10)
+            break
+        except requests.exceptions.Timeout:
+                count_time+=1
+                print('选课 请求超时,进行第'+str(count_time)+'次尝试')
+        except:
+            print('发生其他错误 进行第'+str(count_time)+'次重试')
     reji = json.loads(res_8.text)
-    if reji['flag'] == '1':
-        print('选择课程'+'"'+data_fin[a]['name']+'"成功')
+    # print(type(reji))
+    if 'flag' in reji:
+        if reji['flag'] == '1':
+            print('选择课程'+'"'+data_fin[a]['name']+'"成功')
+            if flag_TrySteal == True:
+                TrySteal_now_get+=1
+        else:
+            print('选择课程'+'"'+data_fin[a]['name']+'"失败')
+            if 'msg' in reji:
+                print('错误信息:'+reji['msg'])
     else:
         print('选择课程'+'"'+data_fin[a]['name']+'"失败')
-        print('错误信息:'+reji['msg'])
 
 
 # 选课part

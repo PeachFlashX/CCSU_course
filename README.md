@@ -4,7 +4,7 @@
 
 目前是 python 初学,可能之后会重构?(不会)
 
-在 `dist` 内修改 `setting.json`后打开 `CCSU_course.exe` 即可使用 👍
+在 `dist` 文件夹下修改 `setting.json`后启动 `CCSU_course.exe` 即可使用 👍
 
 ---
 
@@ -16,7 +16,7 @@
 | flag_TimeStart         | 是否定时启动                              | true/false            |
 | StartTime              | 定时启动的时间（格式：年-月-日 时:分:秒） | "2023-10-01 12:00:00" |
 | flag_AutoSelectKeyWord | 是否根据关键字自动选课                    | true/false            |
-| KeyWord                | 匹配的关键字列表                          | ["Python", "Java"]    |
+| KeyWord                | 匹配的关键字列表                          | ["篮球", "足球"]      |
 | flag_TrySteal          | 是否开启课程捡漏                          | true/false            |
 
 ---
@@ -32,7 +32,7 @@ pip install cryptography requests bs4 rsa six
 or
 
 ```bash
-`pip install -r requirements.txt`
+pip install -r requirements.txt
 ```
 
 ---

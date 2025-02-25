@@ -27,13 +27,28 @@ with open('setting.json','r',encoding='utf-8') as file:
 
 username = reji['username']
 password = reji['password']
-flag_AutoSelectOnline = reji['flag_AutoSelectOnline']
-flag_TimeStart = reji['flag_TimeStart']
-flag_AutoSelectKeyWord = reji['flag_AutoSelectKeyWord']
 flag_TrySteal = reji['flag_TrySteal']
+flag_AutoSelectOnline = reji['flag_AutoSelectOnline']
+flag_AutoSelectKeyWord = reji['flag_AutoSelectKeyWord']
+
+if flag_TrySteal is True:
+    print("当前启动为课程捡漏")
+    flag_AutoSelectOnline = False
+    flag_AutoSelectKeyWord = False
+
+if flag_AutoSelectOnline is True:
+    print("当前启动为自动选择网课")
+    flag_AutoSelectKeyWord = False
+
+if flag_AutoSelectKeyWord is True:
+    print("当前启动为自动选择关键词课")
+
 
 flag_input = not (flag_AutoSelectOnline|flag_AutoSelectKeyWord|flag_TrySteal)
+if flag_input is True:
+    print("当前启动为手动选课")
 
+flag_TimeStart = reji['flag_TimeStart']
 StartTime = reji['StartTime']
 list_keyword = reji['KeyWord']
 
@@ -63,7 +78,7 @@ if flag_TimeStart is True:
     print('当前时间:'+time.strftime("%Y-%m-%d %X",time.localtime()))
     while 1 == 1:
         if time.time()>StartTime_unix-300:
-            print('当前时间为:'+time.strftime("%Y-%m-%d %X",time.localtime())+'距离设定时间还有5分钟,开始尝试登录')
+            print('当前时间为:'+time.strftime("%Y-%m-%d %X",time.localtime())+'距离设定时间不足5分钟,开始尝试登录')
             break
         else:
             print('当前时间:'+time.strftime("%Y-%m-%d %X",time.localtime())+'等待距离设定时间前5分钟开始登录')
@@ -675,20 +690,11 @@ if flag_AutoSelectKeyWord is True:
 
 print('进入选课流程')
 b=0
-TrySteal_now_get = 0
-count_online_course = len(online_course)
-TrySteal_time = 1
-
-if flag_TrySteal == True:
-    print("---------------开始课程捡漏尝试---------------")
-    print("可尝试的网课总数: "+str(len(online_course)))
-
 while 1:
     if flag_TrySteal is True:
+        print('---------------进行课程捡漏---------------')
         if b>=len(online_course):
-            TrySteal_time+=1
-            print("已成功捡漏 "+str(TrySteal_now_get)+" 门课程")
-            print("---------------开始第"+str(TrySteal_time)+"轮课程捡漏尝试---------------")
+            print("一轮")
             b=0
         a=online_course[b]
         b+=1
@@ -755,8 +761,6 @@ while 1:
     if 'flag' in reji:
         if reji['flag'] == '1':
             print('选择课程'+'"'+data_fin[a]['name']+'"成功')
-            if flag_TrySteal == True:
-                TrySteal_now_get+=1
         else:
             print('选择课程'+'"'+data_fin[a]['name']+'"失败')
             if 'msg' in reji:

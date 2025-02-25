@@ -690,20 +690,11 @@ if flag_AutoSelectKeyWord is True:
 
 print('进入选课流程')
 b=0
-TrySteal_now_get = 0
-count_online_course = len(online_course)
-TrySteal_time = 1
-
-if flag_TrySteal == True:
-    print("---------------开始课程捡漏尝试---------------")
-    print("可尝试的网课总数: "+str(len(online_course)))
-
 while 1:
     if flag_TrySteal is True:
+        print('---------------进行课程捡漏---------------')
         if b>=len(online_course):
-            TrySteal_time+=1
-            print("已成功捡漏 "+str(TrySteal_now_get)+" 门课程")
-            print("---------------开始第"+str(TrySteal_time)+"轮课程捡漏尝试---------------")
+            print("一轮")
             b=0
         a=online_course[b]
         b+=1
@@ -770,8 +761,6 @@ while 1:
     if 'flag' in reji:
         if reji['flag'] == '1':
             print('选择课程'+'"'+data_fin[a]['name']+'"成功')
-            if flag_TrySteal == True:
-                TrySteal_now_get+=1
         else:
             print('选择课程'+'"'+data_fin[a]['name']+'"失败')
             if 'msg' in reji:

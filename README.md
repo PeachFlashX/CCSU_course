@@ -71,8 +71,6 @@ or
 
 9.子请求封装
 
-10.自动选课对课程类型的指定
-
 ---
 
 [RSA 加密部分(jsFunction.py)来自,很难不磕一个](https://github.com/Kunz1Pro/CUMT-jwxt/tree/master)

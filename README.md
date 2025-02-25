@@ -4,23 +4,20 @@
 
 目前是 python 初学,可能之后会重构?(不会)
 
-在 dist 内修改 'setting.json'后打开 CCSU_course.exe 即可使用 👍
+在 `dist` 内修改 `setting.json`后打开 `CCSU_course.exe` 即可使用 👍
 
 ---
 
-## setting.json 说明:
+## `setting.json` 说明:
 
-"flag_AutoSelectOnline" 填入 true/false 打开自动选网课
-
-"flag_TimeStart" 填入 true/false 打开定时启动
-
-"StartTime" 填入 "x-x-x x:x:x" 即 "年-月-日 时:分:秒" 设置定时启动的时间
-
-"flag_AutoSelectKeyWord" 填入 true/false 打开根据关键字的自动选课
-
-"KeyWord" []中填入想要匹配的关键字
-
-"flag_TrySteal" 填入 true/false 打开课程捡漏
+| 参数名                 | 描述                                      | 示例值                |
+| ---------------------- | ----------------------------------------- | --------------------- |
+| flag_AutoSelectOnline  | 是否自动选网课                            | true/false            |
+| flag_TimeStart         | 是否定时启动                              | true/false            |
+| StartTime              | 定时启动的时间（格式：年-月-日 时:分:秒） | "2023-10-01 12:00:00" |
+| flag_AutoSelectKeyWord | 是否根据关键字自动选课                    | true/false            |
+| KeyWord                | 匹配的关键字列表                          | ["Python", "Java"]    |
+| flag_TrySteal          | 是否开启课程捡漏                          | true/false            |
 
 ---
 
@@ -28,21 +25,25 @@
 
 所需包安装:
 
-`pip install cryptography requests bs4 rsa six`
+```bash
+pip install cryptography requests bs4 rsa six
+```
 
 or
 
+```bash
 `pip install -r requirements.txt`
+```
 
 ---
 
 ## 待办事项
 
-1.异常处理-请求超时或收到错误响应时重传
+1.异常处理-请求超时或收到错误响应时重传(已完成)
 
 2.定时启动(已完成)
 
-3.体育课直抢(添加关键字直抢,查找课程名中包含所设关键字的课程直接抢课-未测试)
+3.体育课直抢(添加关键字直抢,查找课程名中包含所设关键字的课程直接抢课)
 
 4.课程捡漏(完成)
 

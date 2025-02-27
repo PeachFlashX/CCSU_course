@@ -12,12 +12,12 @@
 
 | 参数名                 | 描述                                      | 示例值                |
 | ---------------------- | ----------------------------------------- | --------------------- |
-| flag_AutoSelectOnline  | 是否自动选网课                            | true/false            |
+| flag_AutoSelectOnline  | 是否自动选网课(优先选择 D 类课程 大概)    | true/false            |
 | flag_TimeStart         | 是否定时启动                              | true/false            |
 | StartTime              | 定时启动的时间（格式：年-月-日 时:分:秒） | "2023-10-01 12:00:00" |
 | flag_AutoSelectKeyWord | 是否根据关键字自动选课                    | true/false            |
 | KeyWord                | 匹配的关键字列表                          | ["篮球", "足球"]      |
-| flag_TrySteal          | 是否开启课程捡漏(重复请求所有可选网课)      | true/false            |
+| flag_TrySteal          | 是否开启课程捡漏(重复请求所有可选网课)    | true/false            |
 
 ---
 

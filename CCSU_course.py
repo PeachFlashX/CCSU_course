@@ -672,8 +672,11 @@ online_course = []
 a = 0
 if flag_AutoSelectOnline is True or flag_TrySteal is True:
     for a in range(len(data_fin)):
-        if(data_fin[a]['location']=='网课'):
-            online_course.append(a)
+        if data_fin[a]['location']=='网课':
+            if data_fin[a]['type']=='D类':
+                online_course.insert(0,a)
+            else:
+                online_course.append(a)
 
 #关键字list制作
 keyword_course = []
@@ -688,13 +691,17 @@ if flag_AutoSelectKeyWord is True:
                 keyword_course.append(a)
                 break
 
+TrySteal_get = 0
+TrySteal_len = len(online_course)
+
 print('进入选课流程')
 b=0
 while 1:
     if flag_TrySteal is True:
         print('---------------进行课程捡漏---------------')
+        print('可选网课总数: '+str(TrySteal_len))
+        print('已成功捡漏网课总数:'+str(TrySteal_get))
         if b>=len(online_course):
-            print("一轮")
             b=0
         a=online_course[b]
         b+=1
@@ -760,7 +767,9 @@ while 1:
     # print(type(reji))
     if 'flag' in reji:
         if reji['flag'] == '1':
-            print('选择课程'+'"'+data_fin[a]['name']+'"成功')
+            print('选择课程'+'"'+data_fin[a]['name']+' '+data_fin[a]['type']+'"成功')
+            if flag_TrySteal == 1:
+                TrySteal_get+=1
         else:
             print('选择课程'+'"'+data_fin[a]['name']+'"失败')
             if 'msg' in reji:

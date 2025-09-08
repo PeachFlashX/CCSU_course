@@ -1,14 +1,34 @@
-{
-    "username": "B202203023",
-    "password": "",
-    "flag_TrySteal": false,
-    "flag_AutoSelectOnline": false,
-    "flag_AutoSelectKeyWord": false,
-    "KeyWord": [
-        "篮球",
-        "足球",
-        "羽毛球"
-    ],
-    "flag_TimeStart": false,
-    "StartTime": "2024-9-13 20:25:00"
-}
+[
+    {
+        "username": "B202203023",
+        "password": "",
+        "flag_TrySteal": false,
+        "flag_AutoSelectOnline": false,
+        "flag_AutoSelectKeyWord": false,
+        "KeyWord": [
+            "篮球",
+            "足球",
+            "羽毛球"
+        ],
+        "flag_TimeStart": false,
+        "StartTime": "2025-9-8 12:30:00",
+        "maxSelect": 3,
+        "timeOut": 60
+    },
+    {
+        "username": "B202203023",
+        "password": "",
+        "flag_TrySteal": false,
+        "flag_AutoSelectOnline": false,
+        "flag_AutoSelectKeyWord": false,
+        "KeyWord": [
+            "篮球",
+            "足球",
+            "羽毛球"
+        ],
+        "flag_TimeStart": false,
+        "StartTime": "2025-9-8 12:30:00",
+        "maxSelect": 3,
+        "timeOut": 60
+    }
+]

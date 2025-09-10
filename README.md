@@ -67,6 +67,8 @@ pip install -r requirements.txt
 
 12.多账号配置选课(已完成)
 
+13.对于每一个请求,同时发送复数请求,从收到响应的请求中获取数据优化在拥塞时的表现
+
 ---
 
 [RSA 加密部分(jsFunction.py)来自,很难不磕一个](https://github.com/Kunz1Pro/CUMT-jwxt/tree/master)
